@@ -1,257 +1,168 @@
-# Photogram Industrial: Starting user interface
-
-## Walkthrough video
-
-**Please note**, the video is from a previous iteration of the project, so there are some differences:
-
-- Anything contained in the project "README" is now contained in this Lesson
-- The layout uses a 3-column sidebar design instead of a traditional navbar
-- Active Storage is used instead of CarrierWave for image uploads
-
-Did you read the differences above? Good! Then [here is a walkthrough video for this project.](https://share.descript.com/view/P3PGeVSVtMW)
-
-**As you watch the video, pause it frequently, read the associated text, and type out the code.**
+# Photogram Industrial: Routes, layout, and controllers
 
 ## Getting started
 
-Let's continue with the `photogram-industrial`, keeping in mind a rough target to work towards:
+Let's continue building our Photogram Industrial project. Here's the target we're working towards:
 
-[photogram-industrial.matchthetarget.com](https://photogram-industrial.matchthetarget.com/)
+[pg-industrial.matchthetarget.com](https://pg-industrial.matchthetarget.com/)
 
-So navigate to `github.com/codespaces` (or reopen the previous lesson and use the "Load assignment" button) and reopen your `photogram-industrial` project codespace to continue building on what you accomplished in _Photogram Industrial Parts 1 and 2_.
+Navigate to `github.com/codespaces` (or reopen the previous lesson and use the "Load assignment" button) and reopen your `photogram-industrial` project codespace to continue building on what you accomplished in _Photogram Industrial Parts 1 and 2_.
 
-## Starting on the interface
+At this point, you should have all five models (User, Photo, Comment, Like, FollowRequest) with their associations, validations, scopes, and sample data loaded. In this lesson, we'll shift our focus from the data layer to the interface layer: routes, the application layout, shared partials, and controllers.
 
-Create a new git branch to start working on the UI:
-
-```
-git checkout -b <your-initials>-starting-on-ui
-```
-
-Our root route (set in Part 1) already points to `users#feed`:
-
-```ruby
-Rails.application.routes.draw do
-  root "users#feed"
-  # ...
-```
-{: filename="config/routes.rb" }
-
-Before we start building views, make sure your sample data is loaded:
+Make sure your sample data is loaded before continuing:
 
 ```
 rake sample_data
 ```
 
-### Remove default scaffold styling
+Let's create a new branch for this work:
 
-When you generated your scaffolds, Rails created a file at `app/assets/stylesheets/scaffolds.scss` (or similar). This file adds some default styling that can conflict with Bootstrap. Find it and delete it, or remove its contents.
+```
+git checkout -b <your-initials>-routes-layout-controllers
+```
 
-## Application layout
+## Setting up routes
 
-The application layout is the backbone of our UI. In the updated Photogram, we use a 3-column layout:
+The scaffold generators from Parts 1 and 2 already added some routes for us, and Devise added `devise_for :users`. But our application needs more than basic CRUD routes. We need vanity URL routes like `/:username` for user profiles, nested routes for viewing a photo's comments and likes, and dedicated pages for feed, discover, followers, and more.
 
-- **Left sidebar**: Navigation links (Feed, Discover, Add photo, Profile, Settings)
-- **Center column**: Main content
-- **Right sidebar**: Search bar and floating action button
+Open `config/routes.rb`. Right now it probably looks something like this:
 
-This layout is responsive — on smaller screens, the sidebars collapse and a mobile bottom nav appears.
+```ruby
+Rails.application.routes.draw do
+  get "up" => "rails/health#show", as: :rails_health_check
+  root "users#feed"
+  devise_for :users
+  resources :likes
+  resources :comments
+  resources :follow_requests
+  resources :photos
+end
+```
+{: filename="config/routes.rb" }
 
-### Bootstrap CDN
+Replace the entire file with this:
 
-First, make sure we have Bootstrap CSS and JavaScript loaded. Create a partial at `app/views/shared/_cdn_assets.html.erb` (if it doesn't exist already) and include the Bootstrap CDN links and Font Awesome for icons.
+```ruby
+Rails.application.routes.draw do
+  get "up" => "rails/health#show", as: :rails_health_check
+  root "users#feed"
+  devise_for :users
+  resources :comments
+  resources :follow_requests
+  resources :likes
+  resources :photos do
+    resources :comments, only: [:index]
+    resources :likes, only: [:index]
+  end
+  resources :users, only: [ :index ]
+  get ":username" => "users#show", as: :user
+  get ":username/feed" => "users#feed", as: :feed
+  get ":username/followers" => "users#followers", as: :followers
+  get ":username/follows" => "users#follows", as: :follows
+  get ":username/pending" => "users#pending", as: :pending
+  get ":username/discover" => "users#discover", as: :discover
+end
+```
+{: filename="config/routes.rb" }
 
-### Application layout file
+Let's walk through the key additions.
 
-Open `app/views/layouts/application.html.erb`. This is where the magic happens. Replace the default content inside `<body>` with our new layout:
+### Nested routes
+
+```ruby
+resources :photos do
+  resources :comments, only: [:index]
+  resources :likes, only: [:index]
+end
+```
+
+This creates nested routes like `/photos/1/comments` and `/photos/1/likes`. These are useful for viewing all comments or likes on a specific photo. The `only: [:index]` restricts the nested routes to just the `index` action — we don't need nested `new`, `create`, etc. because comments and likes are created through the standalone routes above.
+
+### Users index
+
+```ruby
+resources :users, only: [ :index ]
+```
+
+This gives us a `/users` route that we'll use for search results. We're restricting it to `only: [:index]` because Devise handles the other user-related routes (sign up, sign in, edit profile).
+
+### Vanity URL routes
+
+```ruby
+get ":username" => "users#show", as: :user
+get ":username/feed" => "users#feed", as: :feed
+get ":username/followers" => "users#followers", as: :followers
+get ":username/follows" => "users#follows", as: :follows
+get ":username/pending" => "users#pending", as: :pending
+get ":username/discover" => "users#discover", as: :discover
+```
+
+These are the most interesting routes. Instead of `/users/42`, we use `/alice` — a vanity URL with the username right in the path. Each route captures the `:username` segment from the URL and passes it to the appropriate controller action.
+
+<div class="alert alert-danger">
+
+These vanity routes **must** come at the very end of the routes file. Because `:username` matches _any_ string, if these routes were listed first, a request to `/photos` would try to find a user with the username "photos" instead of hitting the photos resource. Rails processes routes top-to-bottom and stops at the first match, so more specific routes must come before these catch-all patterns.
+</div>
+
+The `as:` option on each route creates named path helpers. For example, `as: :user` gives us `user_path("alice")` which generates `/alice`, and `as: :feed` gives us `feed_path("alice")` which generates `/alice/feed`. We'll use these helpers extensively in our views.
+
+Now would be a good time for a commit:
+
+```
+git add -A
+git commit -m "set up routes with nested resources and vanity URLs"
+```
+
+## CDN assets partial
+
+Before we build our layout, we need to bring in Bootstrap and Font Awesome. Instead of cluttering the layout file with CDN links, we'll put them in a shared partial.
+
+Create a new directory and file at `app/views/shared/_cdn_assets.html.erb`:
 
 ```erb
-<body>
-  <%# New Photo Modal - available on every page when signed in %>
-  <% if current_user.present? %>
-    <div class="modal fade" id="new_photo" tabindex="-1" aria-labelledby="newPhotoLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="newPhotoLabel"></h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <%= render "photos/form", photo: current_user.own_photos.build %>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% end %>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
-  <%# Flash messages %>
-  <% if notice.present? || alert.present? %>
-    <div class="container">
-      <div class="row mb-2">
-        <div class="col-md-6 offset-md-3">
-          <% if notice.present? %>
-            <%= render "shared/flash", message: notice, css_class: "success" %>
-          <% end %>
-          <% if alert.present? %>
-            <%= render "shared/flash", message: alert, css_class: "danger" %>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  <% end %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-  <%# Mobile top navbar %>
-  <%= render "shared/navbar" %>
-
-  <%# Three-column layout %>
-  <div class="container mt-5">
-    <div class="row">
-      <%# Left sidebar - navigation %>
-      <div class="col-lg-2 offset-lg-1 col-md-2 d-none d-md-block">
-        <% if current_user.present? %>
-          <ul class="nav flex-column sticky-top">
-            <li class="nav-item">
-              <div class="dropdown">
-                <%= button_tag class: "btn btn-link nav-link border-bottom rounded-bottom-0 text-decoration-none",
-                data: { bs_toggle: "dropdown"}, aria: {expanded: false} do %>
-                  <% if current_user.avatar_image.attached? %>
-                    <%= image_tag current_user.avatar_image, class: "rounded-circle img-small img-cover" %>
-                  <% end %>
-                  <span class="d-xl-inline d-none">
-                    <%= current_user.display_name %>
-                    <div class="fw-lighter">
-                      @<%= current_user.username %>
-                    </div>
-                  </span>
-                <% end %>
-                <ul class="dropdown-menu">
-                  <li>
-                    <%= link_to user_path(current_user.username), class: "dropdown-item icon-link" do %>
-                      <i class="fa-regular fa-circle-user"></i>
-                      Go to profile
-                    <% end %>
-                  </li>
-                  <li>
-                    <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item icon-link" do %>
-                      <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                      Sign out
-                    <% end %>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li class="nav-item">
-              <%= link_to feed_path(current_user.username), class: "nav-link" do %>
-                <i class="fs-2 fa-solid fa-house"></i>
-                <span class="d-xl-inline d-none">Feed</span>
-              <% end %>
-            </li>
-            <li class="nav-item">
-              <%= link_to discover_path(current_user.username), class: "nav-link" do %>
-                <i class="fs-2 fa-solid fa-magnifying-glass"></i>
-                <span class="d-xl-inline d-none">Discover</span>
-              <% end %>
-            </li>
-            <li class="nav-item">
-              <%= button_tag class: "nav-link", data: {bs_toggle: "modal", bs_target: "#new_photo"} do %>
-                <i class="fs-2 fa-solid fa-pen-to-square"></i>
-                <span class="d-xl-inline d-none">Add photo</span>
-              <% end %>
-            </li>
-            <li class="nav-item">
-              <%= link_to user_path(current_user.username), class: "nav-link" do %>
-                <i class="fs-2 fa-regular fa-circle-user"></i>
-                <span class="d-xl-inline d-none">Profile</span>
-              <% end %>
-            </li>
-            <li class="nav-item">
-              <%= link_to edit_user_registration_path, class: "nav-link" do %>
-                <i class="fs-2 fa-solid fa-gear"></i>
-                <span class="d-xl-inline d-none">Settings</span>
-              <% end %>
-            </li>
-          </ul>
-        <% end %>
-      </div>
-
-      <%# Center column - main content %>
-      <div class="col-lg-6 col-md-8 col-12 <%= "border-start border-end" if current_user.present? %>">
-        <%= yield %>
-      </div>
-
-      <%# Right sidebar - search %>
-      <div class="col-lg-3 col-md-2 d-none d-md-block">
-        <% if current_user.present? %>
-          <div class="d-none d-xxl-block mt-2">
-            <%= search_form_for @q, class: "d-flex", role: "search" do |f| %>
-              <%= f.label :username_cont, class: "visually-hidden" %>
-              <%= f.search_field :username_cont, class:"form-control me-2", placeholder: "Search by username" %>
-              <%= f.button class: "btn btn-outline-primary", name: nil, type: "submit" do %>
-                <i class="fas fa-search"></i>
-              <% end %>
-            <% end %>
-          </div>
-          <div class="fixed-bottom me-5 mb-5" style="left: unset">
-            <%= button_tag class: "btn btn-primary rounded-circle fs-1", data: {bs_toggle: "modal", bs_target: "#new_photo"} do %>
-              <i class="fa-solid fa-pen-to-square"></i>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-
-  <%# Mobile bottom navigation %>
-  <% if current_user.present? %>
-    <nav class="navbar fixed-bottom bg-body-tertiary d-block d-sm-none">
-      <div class="container-fluid">
-        <div class="w-100">
-          <ul class="navbar-nav d-flex flex-row justify-content-evenly">
-            <li class="nav-item">
-              <%= link_to feed_path(current_user.username), class: "nav-link" do %>
-                <i class="fs-2 fa-solid fa-house"></i>
-              <% end %>
-            </li>
-            <li class="nav-item">
-              <%= link_to discover_path(current_user.username), class: "nav-link" do %>
-                <i class="fs-2 fa-solid fa-magnifying-glass"></i>
-              <% end %>
-            </li>
-            <li class="nav-item">
-              <%= link_to user_path(current_user.username), class: "nav-link" do %>
-                <i class="fs-2 fa-regular fa-circle-user"></i>
-              <% end %>
-            </li>
-            <li class="nav-item">
-              <%= link_to edit_user_registration_path, class: "nav-link" do %>
-                <i class="fs-2 fa-solid fa-gear"></i>
-              <% end %>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  <% end %>
-</body>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 ```
-{: filename="app/views/layouts/application.html.erb" }
+{: filename="app/views/shared/_cdn_assets.html.erb" }
 
-There's a lot going on here! Let's break it down:
+We're loading three things:
+1. **Bootstrap CSS** — for the grid system, utility classes, and component styles
+2. **Bootstrap JS** — for interactive components like modals, dropdowns, and dismissable alerts
+3. **Font Awesome** — for icons throughout the interface (hearts, houses, magnifying glasses, etc.)
 
-1. **New Photo Modal**: A Bootstrap modal at the top of the page that contains a photo upload form. This is triggered by "Add photo" buttons throughout the interface.
-2. **Flash Messages**: Success and danger alerts displayed at the top of the page.
-3. **Mobile Top Navbar**: A simplified navbar that only shows on small screens (`d-sm-none d-block`).
-4. **Left Sidebar**: A vertical navigation menu with links to Feed, Discover, Add photo, Profile, and Settings. The user's avatar and name are shown at the top in a dropdown that includes "Go to profile" and "Sign out" options.
-5. **Center Column**: Where the `<%= yield %>` renders the page content, with borders on the sides for a clean look.
-6. **Right Sidebar**: Contains a search form (using Ransack) and a floating action button for adding photos.
-7. **Mobile Bottom Nav**: A fixed-bottom navigation bar for small screens.
+<aside markdown="1">
+Why use a CDN instead of bundling these assets locally? CDNs are fast — they're distributed globally, and your users' browsers may already have the files cached from visiting other sites that use the same CDN. For a project like this, CDN links are simple and effective.
+</aside>
 
-### Mobile navbar partial
+## Flash messages partial
 
-The mobile-only top navbar is very simple. Create `app/views/shared/_navbar.html.erb`:
+When a user creates a photo, signs in, or performs other actions, Rails sets flash messages (`:notice` or `:alert`) that we want to display. Let's create a reusable partial for them.
+
+Create `app/views/shared/_flash.html.erb`:
+
+```erb
+<div class="alert alert-<%= css_class %> alert-dismissible fade show" role="alert">
+  <%= message %>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+```
+{: filename="app/views/shared/_flash.html.erb" }
+
+This partial expects two local variables: `message` (the text to display) and `css_class` (either `"success"` for green or `"danger"` for red). The `alert-dismissible` class and close button let users dismiss the message. We'll render this partial from the layout like:
+
+```erb
+<%= render "shared/flash", message: notice, css_class: "success" %>
+```
+
+## Mobile navbar partial
+
+Our layout uses a three-column design that works great on medium and large screens. But on small screens (phones), the sidebars disappear. We need a mobile-only top navbar to provide basic navigation on those screens.
+
+Create `app/views/shared/_navbar.html.erb`:
 
 ```erb
 <nav class="navbar fixed-top bg-body-tertiary d-sm-none d-block mb-5 mb-sm-0">
@@ -274,63 +185,399 @@ The mobile-only top navbar is very simple. Create `app/views/shared/_navbar.html
 ```
 {: filename="app/views/shared/_navbar.html.erb" }
 
-This navbar is hidden on medium and larger screens (`d-sm-none`), and only appears on mobile. It includes the app name and an "Add photo" link when signed in, or sign in/sign up links when not.
+The key Bootstrap classes here are `d-sm-none d-block`. This means: "display block by default, but hide on small screens and up." In practice, this navbar only appears on extra-small screens (phones). On tablets and desktops, the sidebar navigation takes over.
 
-### Flash messages partial
+When the user is signed in, the navbar shows an "Add photo" link. When not signed in, it shows sign in and sign up links instead.
 
-Create `app/views/shared/_flash.html.erb`:
+Now would be a good time for a commit:
+
+```
+git add -A
+git commit -m "created shared partials for CDN assets, flash messages, and navbar"
+```
+
+## Updating the photo form partial
+
+The scaffold generated a `_form.html.erb` partial for photos, but it needs updating to work well in our layout — particularly inside the Bootstrap modal we're about to build. We need a file upload field for the image, a text area for the caption, and proper Bootstrap styling.
+
+Open `app/views/photos/_form.html.erb` and replace its contents with:
 
 ```erb
-<div class="alert alert-<%= css_class %> alert-dismissible fade show mt-3" role="alert">
-  <%= message %>
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<%= form_with(model: photo, class: "card-body") do |form| %>
+  <% if photo.errors.any? %>
+    <div id="error_explanation">
+      <ul class="list-unstyled">
+        <% photo.errors.each do |error| %>
+          <li>
+            <div class="alert alert-danger" role="alert">
+              <%= error.full_message %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.label :image, class: "visually-hidden" %>
+    <% if photo.persisted? && photo.image.attached? %>
+      <%= image_tag photo.image, class: "img-cover w-100 mb-2" %>
+    <% end %>
+    <%= form.file_field :image, class: "form-control", accept: "image/*" %>
+  </div>
+
+  <div class="form-group my-1">
+    <%= form.label :caption, class: "visually-hidden" %>
+    <%= form.text_area :caption, class: "form-control", placeholder: "What's going on?" %>
+  </div>
+
+  <div class="actions d-grid gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>
+```
+{: filename="app/views/photos/_form.html.erb" }
+
+A few things worth noting:
+
+- `form_with(model: photo, class: "card-body")` — The form uses the `photo` local variable, which means it works for both new and existing photos. Rails automatically determines the correct URL and HTTP method.
+- `accept: "image/*"` on the file field — This tells the browser to only show image files in the file picker dialog.
+- `photo.persisted? && photo.image.attached?` — When editing an existing photo, we show the current image above the file field so the user can see what they're replacing.
+- Labels are `visually-hidden` — We use placeholders instead for a cleaner look, but the labels are still present for accessibility (screen readers can read them).
+
+Now would be a good time for a commit:
+
+```
+git add -A
+git commit -m "updated photo form partial with Bootstrap styling and file upload"
+```
+
+## The application layout
+
+Now for the big one. The application layout is the HTML skeleton that wraps every page in our app. We're going to build a responsive three-column design:
+
+- **Left sidebar**: Navigation links (visible on medium screens and up)
+- **Center column**: The main page content (`<%= yield %>`)
+- **Right sidebar**: Search bar and a floating "Add photo" button (visible on medium screens and up)
+- **Mobile bottom nav**: A fixed-bottom navigation bar (visible only on small screens)
+
+There's also a Bootstrap modal for adding photos that's available on every page when signed in.
+
+Open `app/views/layouts/application.html.erb` and replace the entire file with:
+
+```erb
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Target: Photogram (Industrial)" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%= render "shared/cdn_assets" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <% if current_user.present? %>
+      <div class="modal fade" id="new_photo" tabindex="-1" aria-labelledby="newPhotoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="newPhotoLabel"></h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <%= render "photos/form", photo: current_user.own_photos.build %>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if notice.present? || alert.present? %>
+      <div class="container">
+        <div class="row mb-2">
+          <div class="col-md-6 offset-md-3">
+            <% if notice.present? %>
+              <%= render "shared/flash", message: notice, css_class: "success" %>
+            <% end %>
+            <% if alert.present? %>
+              <%= render "shared/flash", message: alert, css_class: "danger" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%= render "shared/navbar" %>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-lg-2 offset-lg-1 col-md-2 d-none d-md-block">
+          <% if current_user.present? %>
+            <ul class="nav flex-column sticky-top">
+              <li class="nav-item">
+                <div class="dropdown">
+                  <%= button_tag class: "btn btn-link nav-link border-bottom rounded-bottom-0 text-decoration-none",
+                  data: { bs_toggle: "dropdown"}, aria: {expanded: false} do %>
+                    <%= image_tag current_user.avatar_image, class: "rounded-circle img-small img-cover" %>
+                    <span class="d-xl-inline d-none">
+                      <%= current_user.display_name %>
+                      <div class="fw-lighter">
+                        @<%= current_user.username %>
+                      </div>
+                    </span>
+                  <% end %>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <%= link_to user_path(current_user.username), class: "dropdown-item icon-link" do %>
+                        <i class="fa-regular fa-circle-user"></i>
+                        Go to profile
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item icon-link" do %>
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        Sign out
+                      <% end %>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item">
+                <%= link_to feed_path(current_user.username), class: "nav-link" do %>
+                  <i class="fs-2 fa-solid fa-house"></i>
+                  <span class="d-xl-inline d-none">
+                    Feed
+                  </span>
+                <% end %>
+              </li>
+              <li class="nav-item">
+                <%= link_to discover_path(current_user.username), class: "nav-link" do %>
+                  <i class="fs-2 fa-solid fa-magnifying-glass"></i>
+                  <span class="d-xl-inline d-none">
+                    Discover
+                  </span>
+                <% end %>
+              </li>
+              <li class="nav-item">
+                <%= button_tag class: "nav-link", data: {bs_toggle: "modal", bs_target: "#new_photo"} do %>
+                  <i class="fs-2 fa-solid fa-pen-to-square"></i>
+                  <span class="d-xl-inline d-none">
+                    Add photo
+                  </span>
+                <% end %>
+              </li>
+              <li class="nav-item">
+                <%= link_to user_path(current_user.username), class: "nav-link" do %>
+                  <i class="fs-2 fa-regular fa-circle-user"></i>
+                  <span class="d-xl-inline d-none">
+                    Profile
+                  </span>
+                <% end %>
+              </li>
+              <li class="nav-item">
+                <%= link_to edit_user_registration_path, class: "nav-link" do %>
+                  <i class="fs-2 fa-solid fa-gear"></i>
+                  <span class="d-xl-inline d-none">
+                    Settings
+                  </span>
+                <% end %>
+              </li>
+            </ul>
+          <% end %>
+        </div>
+        <div class="col-lg-6 col-md-8 col-12 <%= "border-start border-end" if current_user.present? %>">
+            <%= yield %>
+        </div>
+        <div class="col-lg-3 col-md-2 d-none d-md-block">
+          <% if current_user.present? %>
+            <div class="d-none d-xxl-block mt-2">
+              <%= search_form_for @q, class: "d-flex", role: "search" do |f| %>
+                <%= f.label :username_cont, class: "visually-hidden" %>
+                <%= f.search_field :username_cont, class:"form-control me-2", placeholder: "Search by username" %>
+                <%= f.button class: "btn btn-outline-primary", name: nil, type: "submit" do %>
+                  <i class="fas fa-search"></i>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="fixed-bottom me-5 mb-5" style="left: unset">
+              <%= button_tag class: "btn btn-primary rounded-circle fs-1", data: {bs_toggle: "modal", bs_target: "#new_photo"} do %>
+                <i class="fa-solid fa-pen-to-square"></i>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <% if current_user.present? %>
+      <nav class="navbar fixed-bottom bg-body-tertiary d-block d-sm-none">
+        <div class="container-fluid">
+          <div class="w-100" id="footer">
+            <ul class="navbar-nav d-flex flex-row justify-content-evenly">
+                <li class="nav-item">
+                  <%= link_to feed_path(current_user.username), class: "nav-link" do %>
+                    <i class="fs-2 fa-solid fa-house"></i>
+                  <% end %>
+                </li>
+                <li class="nav-item">
+                  <%= link_to discover_path(current_user.username), class: "nav-link" do %>
+                    <i class="fs-2 fa-solid fa-magnifying-glass"></i>
+                  <% end %>
+                </li>
+                <li class="nav-item">
+                  <%= link_to user_path(current_user.username), class: "nav-link" do %>
+                    <i class="fs-2 fa-regular fa-circle-user"></i>
+                  <% end %>
+                </li>
+                <li class="nav-item">
+                  <%= link_to edit_user_registration_path, class: "nav-link" do %>
+                    <i class="fs-2 fa-solid fa-gear"></i>
+                  <% end %>
+                </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    <% end %>
+  </body>
+</html>
+```
+{: filename="app/views/layouts/application.html.erb" }
+
+This is a lot of code, so let's break it down section by section.
+
+### The `<head>`
+
+```erb
+<title><%= content_for(:title) || "Target: Photogram (Industrial)" %></title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+```
+
+The `content_for(:title)` allows individual pages to set a custom title. If none is set, it falls back to the default. The viewport meta tag is essential for responsive design — without it, mobile browsers would render the page as if it were a desktop screen and then zoom out.
+
+We render our CDN assets partial here in the `<head>`, along with the application stylesheet and JavaScript imports.
+
+### The "New Photo" modal
+
+```erb
+<% if current_user.present? %>
+  <div class="modal fade" id="new_photo" ...>
+    ...
+    <%= render "photos/form", photo: current_user.own_photos.build %>
+    ...
+  </div>
+<% end %>
+```
+
+This is a [Bootstrap modal](https://getbootstrap.com/docs/5.3/components/modal/) — an overlay dialog that appears when triggered. We include it on _every_ page so that users can add a photo from anywhere in the app. The `current_user.own_photos.build` creates a new, unsaved Photo object associated with the current user, which the form partial uses to generate the correct form fields.
+
+The modal is triggered by buttons with `data-bs-toggle="modal"` and `data-bs-target="#new_photo"` — you'll see those buttons in the left sidebar and the floating action button.
+
+### Flash messages
+
+```erb
+<% if notice.present? || alert.present? %>
+  <div class="container">
+    <div class="row mb-2">
+      <div class="col-md-6 offset-md-3">
+        ...
+      </div>
+    </div>
+  </div>
+<% end %>
+```
+
+Flash messages are centered on the page using Bootstrap's grid offset. We only render this section if there's actually a flash message to show.
+
+### The three-column layout
+
+The main content area uses Bootstrap's grid system:
+
+```erb
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-lg-2 offset-lg-1 col-md-2 d-none d-md-block">
+      <!-- Left sidebar -->
+    </div>
+    <div class="col-lg-6 col-md-8 col-12">
+      <%= yield %>
+    </div>
+    <div class="col-lg-3 col-md-2 d-none d-md-block">
+      <!-- Right sidebar -->
+    </div>
+  </div>
 </div>
 ```
-{: filename="app/views/shared/_flash.html.erb" }
 
-This reusable partial takes a `message` and `css_class` and renders a dismissable Bootstrap alert.
+The `d-none d-md-block` classes on both sidebars mean they're hidden on small screens and visible on medium screens and up. The center column takes the full width (`col-12`) on small screens, 8 columns on medium screens, and 6 columns on large screens. This makes the layout responsive without writing any custom CSS.
 
-## Force sign in
+The `<%= yield %>` in the center column is where the content from each page's view template gets rendered.
 
-To require users to be signed in before they can access any page, add a `before_action` to the `ApplicationController`:
+### Left sidebar navigation
 
-```ruby{1}
-class ApplicationController < ActionController::Base
-  before_action :authenticate_user!
-end
+The left sidebar contains a vertical navigation menu wrapped in `sticky-top`, which keeps it visible as the user scrolls. Key elements:
+
+- **User dropdown**: Shows the current user's avatar, display name, and username. Clicking it reveals a dropdown with "Go to profile" and "Sign out" options. The `button_to` for sign out uses `method: :delete` because Devise expects a DELETE request.
+- **Navigation links**: Feed, Discover, Add photo, Profile, and Settings. Each uses a Font Awesome icon and a text label. The text labels use `d-xl-inline d-none` to only appear on extra-large screens — on medium and large screens, only the icons show, keeping the sidebar compact.
+- **Add photo button**: Uses `button_tag` with Bootstrap modal data attributes instead of a link, since it opens the modal overlay rather than navigating to a new page.
+
+### Right sidebar
+
+The right sidebar has two elements:
+
+1. **Search form**: Uses the Ransack gem's `search_form_for` helper with the `@q` search object (which we'll set up in `ApplicationController` shortly). The `:username_cont` search field means "username contains" — Ransack generates the correct SQL `LIKE` query automatically. The form is hidden below extra-extra-large screens (`d-none d-xxl-block`).
+
+2. **Floating action button**: A circular "Add photo" button fixed to the bottom-right corner of the screen. The `style="left: unset"` prevents Bootstrap's `fixed-bottom` from stretching it across the full width.
+
+### Mobile bottom navigation
+
+```erb
+<nav class="navbar fixed-bottom bg-body-tertiary d-block d-sm-none">
 ```
-{: filename="app/controllers/application_controller.rb" }
 
-This uses a Devise helper method, `authenticate_user!`, which will redirect unauthenticated users to the sign in page.
+This navigation bar only appears on extra-small screens (`d-block d-sm-none`). It uses `fixed-bottom` to stick to the bottom of the screen — just like Instagram's mobile app. It provides quick access to Feed, Discover, Profile, and Settings.
 
-Now, if you try to visit any page without being signed in, you'll be redirected to `/users/sign_in` with a flash message: "You need to sign in or sign up before continuing."
+<aside markdown="1">
+Notice how we use Bootstrap's responsive display utilities (`d-none`, `d-md-block`, `d-sm-none`, etc.) throughout the layout to show and hide elements at different screen sizes. This is much easier than writing custom media queries. The sidebars and bottom nav work together to provide navigation on every screen size.
+</aside>
 
-## Configure permitted parameters
+Now would be a good time for a commit:
 
-Since we added custom fields to our `User` model (`username`, `display_name`, `avatar_image`, `profile_banner`, `bio`, `website`, `private`), we need to tell Devise to allow those fields through in the sign up and account update forms:
+```
+git add -A
+git commit -m "built application layout with three-column design and responsive navigation"
+```
+
+## ApplicationController
+
+Now let's set up the `ApplicationController`. This is the parent class of all our controllers, so anything we put here applies to every page in the app. We need three things:
+
+1. **Authentication** — require sign-in to access any page
+2. **Permitted parameters** — tell Devise which custom fields to allow
+3. **Ransack search** — set up the search object for the layout's search bar
+
+Open `app/controllers/application_controller.rb`. Right now it's empty:
 
 ```ruby
 class ApplicationController < ActionController::Base
-  before_action :configure_permitted_parameters, if: :devise_controller?
-  before_action :authenticate_user!
-
-  protected
-
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:display_name, :username])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:avatar_image, :bio, :display_name, :username, :private, :profile_banner, :remove_profile_banner, :website])
-  end
 end
 ```
 {: filename="app/controllers/application_controller.rb" }
 
-The `configure_permitted_parameters` method runs only when a Devise controller is handling the request (`if: :devise_controller?`). The `sign_up` sanitizer permits `display_name` and `username` — the fields we want on our sign up form. The `account_update` sanitizer permits all the profile fields that users should be able to edit.
+Replace it with:
 
-## User search with Ransack
-
-We added a search bar in the right sidebar that uses the [Ransack gem](https://github.com/activerecord-hackery/ransack) to search users by username. To make this work, we need to set up a `@q` variable in the `ApplicationController` that's available on every page:
-
-```ruby{2,5-7}
+```ruby{2-4,6-8,10,12-14}
 class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :authenticate_user!
@@ -350,68 +597,65 @@ end
 ```
 {: filename="app/controllers/application_controller.rb" }
 
-The `set_user_search` method creates a Ransack search object `@q` that can be used in the layout's search form. We only set it when the user is signed in (since the search bar isn't shown otherwise).
+Let's walk through each piece.
 
-We also need to tell the `User` model which attributes can be searched:
-
-```ruby
-class User < ApplicationRecord
-  # ...
-
-  def self.ransackable_attributes(auth_object = nil)
-    [ "username" ]
-  end
-end
-```
-{: filename="app/models/user.rb" }
-
-This whitelists only the `username` attribute for searching, keeping the search secure.
-
-## Routes
-
-Now let's set up all the routes we need. Here is the complete routes file:
+### Requiring authentication
 
 ```ruby
-Rails.application.routes.draw do
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+before_action :authenticate_user!
+```
 
-  root "users#feed"
+This is a Devise helper method. It runs before every action in every controller. If the user isn't signed in, Devise redirects them to `/users/sign_in` with the flash message "You need to sign in or sign up before continuing." This is exactly what our tests expect.
 
-  devise_for :users
+### Configuring permitted parameters
 
-  resources :comments
-  resources :follow_requests
-  resources :likes
-  resources :photos do
-    resources :comments, only: [:index]
-    resources :likes, only: [:index]
-  end
-  resources :users, only: [ :index ]
+```ruby
+before_action :configure_permitted_parameters, if: :devise_controller?
+```
 
-  get ":username" => "users#show", as: :user
-  get ":username/feed" => "users#feed", as: :feed
-  get ":username/followers" => "users#followers", as: :followers
-  get ":username/follows" => "users#follows", as: :follows
-  get ":username/pending" => "users#pending", as: :pending
-  get ":username/discover" => "users#discover", as: :discover
+The `if: :devise_controller?` condition means this `before_action` only runs when the request is being handled by one of Devise's built-in controllers (sign up, sign in, edit profile, etc.). It doesn't run for our custom controllers.
+
+```ruby
+def configure_permitted_parameters
+  devise_parameter_sanitizer.permit(:sign_up, keys: [:display_name, :username])
+  devise_parameter_sanitizer.permit(:account_update, keys: [:avatar_image, :bio, :display_name, :username, :private, :profile_banner, :remove_profile_banner, :website])
 end
 ```
-{: filename="config/routes.rb" }
 
-Key things to note:
+By default, Devise only permits `email`, `password`, and `password_confirmation`. Since we added custom columns to our User model, we need to explicitly tell Devise to allow them through. The `:sign_up` sanitizer controls which fields are accepted during registration, and the `:account_update` sanitizer controls which fields are accepted when editing a profile.
 
-- The root points to `users#feed`, which shows the feed for the current user
-- We have nested routes for comments and likes under photos (e.g., `/photos/1/likes` shows who liked a photo)
-- The `/:username` routes use a wildcard segment to match usernames. These **must** come after all other routes, otherwise they would swallow routes like `/photos/new`
-- We have dedicated pages for `followers`, `follows` (following), `pending` follow requests, and `discover`
+Notice that `:sign_up` only permits `:display_name` and `:username` — we don't want users uploading avatars or setting bios during registration. Those are for the account update form. Also note `:remove_profile_banner` in the account update list — this is the virtual attribute we set up on the User model in Part 2 for removing the banner image via a checkbox.
 
-Commit your progress!
+### Setting up Ransack search
 
-## Controllers overview
+```ruby
+before_action :set_user_search, if: -> { current_user.present? }
 
-Let's set up our controllers. The `UsersController` needs several actions:
+def set_user_search
+  @q = User.all.ransack(params[:q])
+end
+```
+
+The `set_user_search` method creates a Ransack search object `@q` and stores it in an instance variable. Since this runs in `ApplicationController`, `@q` is available in _every_ view template — including the layout, where our search form lives. The `if: -> { current_user.present? }` condition skips this when no user is signed in (since the search bar isn't shown to signed-out users anyway).
+
+When someone submits the search form, the params will include something like `q[username_cont]=ali`. Ransack parses this and generates a query like `WHERE username ILIKE '%ali%'`. The `_cont` suffix is a Ransack predicate meaning "contains."
+
+<aside markdown="1">
+Remember that we whitelisted `username` as a searchable attribute back in Part 2 with `ransackable_attributes`. Without that whitelist, Ransack would refuse to search at all — it's a security measure to prevent people from searching sensitive fields like `email` or `encrypted_password`.
+</aside>
+
+Now would be a good time for a commit:
+
+```
+git add -A
+git commit -m "configured ApplicationController with auth, permitted params, and Ransack search"
+```
+
+## Creating the UsersController
+
+Unlike the other controllers which were generated by scaffolds, the `UsersController` is brand new. We need to create it from scratch because it has custom actions that don't follow the standard CRUD pattern.
+
+Create `app/controllers/users_controller.rb`:
 
 ```ruby
 class UsersController < ApplicationController
@@ -457,54 +701,113 @@ end
 ```
 {: filename="app/controllers/users_controller.rb" }
 
-The `set_user` method is key — when a `username` parameter is present, it finds that user. When the root route is visited (no username), it defaults to `current_user`. The `find_by!` raises a 404 error if the user doesn't exist.
+Let's walk through this controller action by action.
 
-The other controllers need updates too. For `CommentsController`, we need to auto-assign the author and redirect back:
+### The `set_user` before_action
 
-```ruby{3,9}
-  def create
-    @comment = Comment.new(comment_params)
-    @comment.author = current_user
+```ruby
+before_action :set_user, only: %i[ show feed discover follows followers pending ]
 
-    respond_to do |format|
-      if @comment.save
-        format.html { redirect_back fallback_location: root_path, notice: "Comment was successfully created." }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-      end
-    end
+def set_user
+  if params[:username]
+    @user = User.find_by!(username: params.fetch(:username))
+  else
+    @user = current_user
   end
+end
 ```
-{: filename="app/controllers/comments_controller.rb" }
 
-For `LikesController`, auto-assign the fan and redirect back:
+This is the most important method in the controller. It runs before `show`, `feed`, `discover`, `follows`, `followers`, and `pending`. When the URL contains a username (like `/alice/feed`), it finds that user in the database. When there's no username (like when visiting the root URL `/`, which routes to `users#feed`), it defaults to `current_user`.
 
-```ruby{3,9,19}
-  def create
-    @like = Like.new(like_params)
-    @like.fan = current_user
+The `find_by!` method (with a bang!) raises an `ActiveRecord::RecordNotFound` exception if no user is found, which Rails automatically converts to a 404 error page. This is better than `find_by` (without the bang), which would return `nil` and cause confusing `NoMethodError` crashes later in the action.
 
-    respond_to do |format|
-      if @like.save
-        format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully created." }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-      end
-    end
-  end
+### The `index` action
 
-  def destroy
-    @like.destroy
-    respond_to do |format|
-      format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully destroyed." }
-    end
-  end
+```ruby
+def index
+  @users = @q.result
+end
 ```
-{: filename="app/controllers/likes_controller.rb" }
 
-For `PhotosController`, auto-assign the owner:
+This is the search results page. Remember that `@q` is the Ransack search object set up in `ApplicationController`. Calling `.result` on it executes the search query and returns matching users. If no search params are present, it returns all users.
 
-```ruby{3,18}
+### Feed and Discover
+
+```ruby
+def feed
+  @photos = @user.feed
+end
+
+def discover
+  @photos = @user.discover
+end
+```
+
+These actions leverage the `has_many :through` associations we built in Part 2. `@user.feed` returns all photos posted by people `@user` follows. `@user.discover` returns all photos liked by people `@user` follows. The heavy lifting is done by the model — the controller just passes the data to the view.
+
+### Follows, Followers, and Pending
+
+```ruby
+def follows
+  @follows = @user.leaders
+end
+
+def followers
+  @followers = @user.followers
+end
+
+def pending
+  @pending = @user.pending_received_follow_requests
+end
+```
+
+These are straightforward — each action uses an association we defined on the User model. `leaders` gives us the people `@user` follows, `followers` gives us the people who follow `@user`, and `pending_received_follow_requests` gives us follow requests that `@user` hasn't responded to yet.
+
+<aside markdown="1">
+Notice that we don't have a `before_action :set_user` on the `index` action. That's intentional — the search results page doesn't operate on a single user.
+</aside>
+
+Now would be a good time for a commit:
+
+```
+git add -A
+git commit -m "created UsersController with feed, discover, follows, followers, and pending actions"
+```
+
+## Customizing scaffold controllers
+
+The scaffold generator gave us working controllers for Photos, Comments, Likes, and FollowRequests. But they need several modifications to work properly in our application:
+
+1. **Auto-assigning the current user** — Instead of relying on form fields for `owner_id`, `author_id`, `fan_id`, and `sender_id`, we should set these from `current_user` in the controller. This is both more secure (users can't fake someone else's identity) and more convenient.
+2. **Redirect behavior** — Some actions should redirect back to where the user came from rather than to the created/destroyed record.
+3. **Business logic** — The FollowRequests controller needs to auto-accept requests for public accounts.
+
+### PhotosController
+
+Open `app/controllers/photos_controller.rb`. The scaffold generated a standard CRUD controller. We need to make a few changes. Here's the complete target:
+
+```ruby{2,17}
+class PhotosController < ApplicationController
+  before_action :set_photo, only: %i[ show edit likes update destroy ]
+
+  def index
+    @photos = Photo.all
+  end
+
+  def show
+  end
+
+  def likes
+    @likes = @photo.likes
+  end
+
+  def new
+    @photo = Photo.new
+  end
+
+  def edit
+  end
+
   def create
     @photo = Photo.new(photo_params)
     @photo.owner = current_user
@@ -512,8 +815,22 @@ For `PhotosController`, auto-assign the owner:
     respond_to do |format|
       if @photo.save
         format.html { redirect_to @photo, notice: "Photo was successfully created." }
+        format.json { render :show, status: :created, location: @photo }
       else
         format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @photo.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def update
+    respond_to do |format|
+      if @photo.update(photo_params)
+        format.html { redirect_to @photo, notice: "Photo was successfully updated." }
+        format.json { render :show, status: :ok, location: @photo }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @photo.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -522,14 +839,289 @@ For `PhotosController`, auto-assign the owner:
     @photo.destroy
     respond_to do |format|
       format.html { redirect_back fallback_location: root_url, notice: "Photo was successfully destroyed." }
+      format.json { head :no_content }
     end
   end
+
+  private
+    def set_photo
+      @photo = Photo.find(params.expect(:id))
+    end
+
+    def photo_params
+      params.expect(photo: [:image, :pinned, :caption])
+    end
+end
 ```
 {: filename="app/controllers/photos_controller.rb" }
 
-For `FollowRequestsController`, auto-assign the sender and auto-accept for public accounts:
+Here's what changed from the scaffold:
 
-```ruby{3-5,11}
+**1. Added `likes` to the `before_action` and created the `likes` action:**
+
+```ruby{2,11-13}
+  before_action :set_photo, only: %i[ show edit likes update destroy ]
+
+  # ...
+
+  def likes
+    @likes = @photo.likes
+  end
+```
+
+We added a `likes` action that fetches all likes for a photo. This supports the nested route `/photos/:photo_id/likes`. We also added `:likes` to the `set_photo` before_action so that `@photo` is available in this action.
+
+**2. Auto-assigned the owner in `create`:**
+
+```ruby{3}
+  def create
+    @photo = Photo.new(photo_params)
+    @photo.owner = current_user
+```
+
+Instead of accepting `owner_id` from the form (which could be tampered with), we set it from `current_user`. This is a security best practice — never trust user input for the identity of who's performing an action.
+
+**3. Changed `destroy` to redirect back:**
+
+```ruby{4}
+  def destroy
+    @photo.destroy
+    respond_to do |format|
+      format.html { redirect_back fallback_location: root_url, notice: "Photo was successfully destroyed." }
+```
+
+The scaffold redirected to `photos_url` (the index page). We use `redirect_back` instead, which sends the user back to wherever they came from (their feed, a profile page, etc.). The `fallback_location: root_url` is a safety net — if there's no referer header, it redirects to the homepage.
+
+**4. Updated `photo_params`:**
+
+```ruby
+  def photo_params
+    params.expect(photo: [:image, :pinned, :caption])
+  end
+```
+
+We permit `:image`, `:pinned`, and `:caption`. Notice that `:owner_id` is _not_ in this list — we set that in the controller, not from form params.
+
+### CommentsController
+
+Open `app/controllers/comments_controller.rb` and update it to match:
+
+```ruby
+class CommentsController < ApplicationController
+  before_action :set_comment, only: %i[ show edit update destroy ]
+
+  def index
+    @comments = Comment.all
+  end
+
+  def show
+  end
+
+  def new
+    @comment = Comment.new
+  end
+
+  def edit
+  end
+
+  def create
+    @comment = Comment.new(comment_params)
+    @comment.author = current_user
+
+    respond_to do |format|
+      if @comment.save
+        format.html { redirect_back fallback_location: root_path, notice: "Comment was successfully created." }
+        format.json { render :show, status: :created, location: @comment }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @comment.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def update
+    respond_to do |format|
+      if @comment.update(comment_params)
+        format.html { redirect_to root_url, notice: "Comment was successfully updated." }
+        format.json { render :show, status: :ok, location: @comment }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @comment.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def destroy
+    @comment.destroy
+    respond_to do |format|
+      format.html { redirect_back fallback_location: root_url, notice: "Comment was successfully destroyed." }
+      format.json { head :no_content }
+    end
+  end
+
+  private
+    def set_comment
+      @comment = Comment.find(params.expect(:id))
+    end
+
+    def comment_params
+      params.expect(comment: [:author_id, :photo_id, :body])
+    end
+end
+```
+{: filename="app/controllers/comments_controller.rb" }
+
+The key changes from the scaffold:
+
+**1. Auto-assign the author:**
+
+```ruby{3}
+  def create
+    @comment = Comment.new(comment_params)
+    @comment.author = current_user
+```
+
+Same pattern as photos — we set the author from `current_user` rather than trusting form input.
+
+**2. Redirect back after create and destroy:**
+
+```ruby
+format.html { redirect_back fallback_location: root_path, notice: "Comment was successfully created." }
+```
+
+Comments are created and deleted inline on the feed/photo pages, so we want to redirect back to wherever the user was rather than navigating to a separate comments page.
+
+**3. Redirect to root after update:**
+
+```ruby
+format.html { redirect_to root_url, notice: "Comment was successfully updated." }
+```
+
+After editing a comment, we send the user back to the homepage.
+
+### LikesController
+
+Open `app/controllers/likes_controller.rb` and update it:
+
+```ruby
+class LikesController < ApplicationController
+  before_action :set_like, only: %i[ show edit update destroy ]
+
+  def index
+    @photo = Photo.find(params[:photo_id])
+    @likes = @photo.likes
+  end
+
+  def show
+  end
+
+  def new
+    @like = Like.new
+  end
+
+  def edit
+  end
+
+  def create
+    @like = Like.new(like_params)
+    @like.fan = current_user
+
+    respond_to do |format|
+      if @like.save
+        format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully created." }
+        format.json { render :show, status: :created, location: @like }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @like.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def update
+    respond_to do |format|
+      if @like.update(like_params)
+        format.html { redirect_to @like, notice: "Like was successfully updated." }
+        format.json { render :show, status: :ok, location: @like }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @like.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def destroy
+    @like.destroy
+    respond_to do |format|
+      format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully destroyed." }
+      format.json { head :no_content }
+    end
+  end
+
+  private
+    def set_like
+      @like = Like.find(params.expect(:id))
+    end
+
+    def like_params
+      params.expect(like: [:fan_id, :photo_id])
+    end
+end
+```
+{: filename="app/controllers/likes_controller.rb" }
+
+The key changes:
+
+**1. Updated `index` to find likes through a photo:**
+
+```ruby{2-3}
+  def index
+    @photo = Photo.find(params[:photo_id])
+    @likes = @photo.likes
+  end
+```
+
+The `index` action now expects a `photo_id` parameter (from the nested route `/photos/:photo_id/likes`) and shows the likes for that specific photo.
+
+**2. Auto-assign the fan:**
+
+```ruby{3}
+  def create
+    @like = Like.new(like_params)
+    @like.fan = current_user
+```
+
+Same pattern — the current user is automatically set as the fan.
+
+**3. Redirect back to the photo after create and destroy:**
+
+```ruby
+format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully created." }
+```
+
+After liking or unliking a photo, the user stays on the same page. The `fallback_location` is `@like.photo` — the photo that was liked.
+
+### FollowRequestsController
+
+Open `app/controllers/follow_requests_controller.rb` and update it:
+
+```ruby
+class FollowRequestsController < ApplicationController
+  before_action :set_follow_request, only: %i[ show edit update destroy ]
+
+  def index
+    @follow_requests = FollowRequest.all
+  end
+
+  def show
+  end
+
+  def new
+    @follow_request = FollowRequest.new
+  end
+
+  def edit
+  end
+
   def create
     @follow_request = FollowRequest.new(follow_request_params)
     @follow_request.sender = current_user
@@ -540,17 +1132,101 @@ For `FollowRequestsController`, auto-assign the sender and auto-accept for publi
     respond_to do |format|
       if @follow_request.save
         format.html { redirect_back fallback_location: root_url, notice: "Follow request was successfully created." }
+        format.json { render :show, status: :created, location: @follow_request }
       else
         format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @follow_request.errors, status: :unprocessable_entity }
       end
     end
   end
+
+  def update
+    respond_to do |format|
+      if @follow_request.update(follow_request_params)
+        format.html { redirect_back fallback_location: root_url, notice: "Follow request was successfully updated." }
+        format.json { render :show, status: :ok, location: @follow_request }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @follow_request.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def destroy
+    @follow_request.destroy
+    respond_to do |format|
+      format.html { redirect_back fallback_location: root_url, notice: "Follow request was successfully destroyed." }
+      format.json { head :no_content }
+    end
+  end
+
+  private
+    def set_follow_request
+      @follow_request = FollowRequest.find(params.expect(:id))
+    end
+
+    def follow_request_params
+      params.expect(follow_request: [:recipient_id, :sender_id, :status])
+    end
+end
 ```
 {: filename="app/controllers/follow_requests_controller.rb" }
 
-This is a nice touch — when following a public account, the follow request is automatically accepted. For private accounts, it remains as "pending" until the recipient accepts it.
+The key changes:
 
-Commit all your controller changes!
+**1. Auto-assign the sender and auto-accept for public accounts:**
+
+```ruby{3-5}
+  def create
+    @follow_request = FollowRequest.new(follow_request_params)
+    @follow_request.sender = current_user
+    unless @follow_request.recipient.private?
+      @follow_request.status = "accepted"
+    end
+```
+
+This is the most interesting controller logic. First, we set the `sender` to `current_user`. Then we check if the recipient's account is public (`private?` returns `false`). If it is public, we automatically accept the follow request — the user doesn't need to wait for approval. If the account is private, the status stays as `"pending"` (the default we set in the migration), and the recipient will need to accept it manually.
+
+**2. Redirect back after create, update, and destroy:**
+
+All three actions use `redirect_back fallback_location: root_url`. Follow/unfollow actions happen from profile pages, the discover page, and other places — we always want to send the user back to where they were.
+
+Now would be a good time for a commit:
+
+```
+git add -A
+git commit -m "customized scaffold controllers with auto-assignment, redirect_back, and follow logic"
+```
+
+## Verify your progress
+
+At this point, you should have:
+
+1. Routes set up with nested resources, vanity URLs, and named path helpers
+2. Shared partials for CDN assets, flash messages, and the mobile navbar
+3. A complete application layout with a three-column responsive design
+4. `ApplicationController` configured with authentication, Devise permitted parameters, and Ransack search
+5. A hand-built `UsersController` with feed, discover, followers, follows, and pending actions
+6. All four scaffold controllers customized with `current_user` auto-assignment and proper redirects
+
+Try starting your server with `bin/dev` and visiting `/`. You should be redirected to the sign-in page. Sign in with one of the sample data accounts (e.g., `alice@example.com` / `appdev`) and you should see the three-column layout with navigation links in the left sidebar.
+
+<div class="alert alert-info">
+
+The views won't look complete yet — we haven't built the feed, discover, profile, or other view templates. You may see errors when clicking through to pages like Feed or Discover because the view files don't exist yet. That's expected! We'll build all of those views in Part 4.
+</div>
+
+Now would be a good time for a final commit and push:
+
+```
+git add -A
+git commit -m "completed Part 3: routes, layout, and controllers"
+git push -u origin HEAD
+```
+
+In the next part, we'll build out all of the view templates — the feed, discover page, user profiles, photo detail pages, and more.
+
+---
 
 - Approximately how long (in minutes) did this lesson take you to complete?
 {: .free_text_number #time_taken title="Time taken" points="1" answer="any" }
@@ -934,7 +1610,6 @@ RSpec.describe Photo, type: :model do
 end
 
 require "rails_helper"
-
 
 RSpec.describe User, type: :model do
   describe "has a has_many association defined called 'comments' with Class name 'Comment' and foreign key 'author_id'", points: 1 do
