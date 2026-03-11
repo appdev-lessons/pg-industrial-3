@@ -1,4 +1,4 @@
-# Photogram Industrial Part 3: Starting user interface
+# Photogram Industrial: Starting user interface
 
 ## Walkthrough video
 
