@@ -112,7 +112,10 @@ Now would be a good time for a commit:
 ```
 git add -A
 git commit -m "Set up routes with nested resources and vanity URLs"
+git push --set-upstream origin routes-layout-controllers
 ```
+
+That last command publishes the branch to GitHub. From now on, you can push with just `git push` after each commit.
 
 ## CDN assets partial
 
@@ -194,6 +197,7 @@ Now would be a good time for a commit:
 ```
 git add -A
 git commit -m "Created shared partials for CDN assets, flash messages, and navbar"
+git push
 ```
 
 ## Updating the photo form partial
@@ -250,6 +254,7 @@ Now would be a good time for a commit:
 ```
 git add -A
 git commit -m "Updated photo form partial with Bootstrap styling and file upload"
+git push
 ```
 
 ## The application layout
@@ -557,6 +562,7 @@ Now would be a good time for a commit:
 ```
 git add -A
 git commit -m "Built application layout with three-column design and responsive navigation"
+git push
 ```
 
 ## ApplicationController
@@ -649,6 +655,7 @@ Now would be a good time for a commit:
 ```
 git add -A
 git commit -m "Configured ApplicationController with auth, permitted params, and Ransack search"
+git push
 ```
 
 ## Creating the UsersController
@@ -772,6 +779,7 @@ Now would be a good time for a commit:
 ```
 git add -A
 git commit -m "Created UsersController with feed, discover, follows, followers, and pending actions"
+git push
 ```
 
 ## Customizing scaffold controllers
@@ -972,6 +980,7 @@ Now would be a good time for a commit:
 ```
 git add -A
 git commit -m "Customized scaffold controllers with auto-assignment, redirect_back, and follow logic"
+git push
 ```
 
 ## Verify your progress
@@ -997,7 +1006,7 @@ Now would be a good time for a final commit and push:
 ```
 git add -A
 git commit -m "Completed Part 3: routes, layout, and controllers"
-git push -u origin HEAD
+git push
 ```
 
 In the next part, we'll build out all of the view templates: the feed, discover page, user profiles, photo detail pages, and more.
