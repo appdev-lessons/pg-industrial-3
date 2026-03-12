@@ -117,6 +117,8 @@ git push --set-upstream origin routes-layout-controllers
 
 That last command publishes the branch to GitHub. From now on, you can push with just `git push` after each commit.
 
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
+
 ## CDN assets partial
 
 Before we build our layout, we need to bring in Bootstrap and Font Awesome. Instead of cluttering the layout file with CDN links, we'll put them in a shared partial.
@@ -200,6 +202,8 @@ git commit -m "Created shared partials for CDN assets, flash messages, and navba
 git push
 ```
 
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
+
 ## Updating the photo form partial
 
 The scaffold generated a `_form.html.erb` partial for photos, but it needs updating to work well in our layout, particularly inside the Bootstrap modal we're about to build. We need a file upload field for the image, a text area for the caption, and proper Bootstrap styling.
@@ -256,6 +260,8 @@ git add -A
 git commit -m "Updated photo form partial with Bootstrap styling and file upload"
 git push
 ```
+
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
 
 ## The application layout
 
@@ -565,6 +571,8 @@ git commit -m "Built application layout with three-column design and responsive 
 git push
 ```
 
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
+
 ## ApplicationController
 
 Now let's set up the `ApplicationController`. This is the parent class of all our controllers, so anything we put here applies to every page in the app. We need three things:
@@ -657,6 +665,8 @@ git add -A
 git commit -m "Configured ApplicationController with auth, permitted params, and Ransack search"
 git push
 ```
+
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
 
 ## Creating the UsersController
 
@@ -781,6 +791,8 @@ git add -A
 git commit -m "Created UsersController with feed, discover, follows, followers, and pending actions"
 git push
 ```
+
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
 
 ## Customizing scaffold controllers
 
@@ -983,6 +995,8 @@ git commit -m "Customized scaffold controllers with auto-assignment, redirect_ba
 git push
 ```
 
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
+
 ## Verify your progress
 
 At this point, you should have:
@@ -1008,6 +1022,8 @@ git add -A
 git commit -m "Completed Part 3: routes, layout, and controllers"
 git push
 ```
+
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
 
 In the next part, we'll build out all of the view templates: the feed, discover page, user profiles, photo detail pages, and more.
 
