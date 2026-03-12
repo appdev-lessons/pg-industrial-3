@@ -6,7 +6,7 @@ Let's continue building our Photogram Industrial project. Here's the target we'r
 
 [pg-industrial.matchthetarget.com](https://pg-industrial.matchthetarget.com/)
 
-Navigate to `github.com/codespaces` (or reopen the previous lesson and use the "Load assignment" button) and reopen your `photogram-industrial` project codespace to continue building on what you accomplished in the previous lessons.
+Navigate to `github.com/codespaces` (or reopen the previous lesson and use the "Load assignment" button) and reopen your `pg-industrial` project codespace to continue building on what you accomplished in the previous lessons.
 
 At this point, you should have all five models (User, Photo, Comment, Like, FollowRequest) with their associations, validations, scopes, and sample data loaded. In this lesson, we'll shift our focus from the data layer to the interface layer: routes, the application layout, shared partials, and controllers.
 
@@ -47,21 +47,27 @@ end
 ```
 {: filename="config/routes.rb" }
 
-Replace the entire file with this:
+Replace the entire file with this, paying particular attention to the key highlighted additions:
 
-```ruby
+```ruby{12-15,17,19-24}
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
+
   root "users#feed"
+
   devise_for :users
+
   resources :comments
   resources :follow_requests
   resources :likes
+
   resources :photos do
     resources :comments, only: [:index]
     resources :likes, only: [:index]
   end
+
   resources :users, only: [ :index ]
+
   get ":username" => "users#show", as: :user
   get ":username/feed" => "users#feed", as: :feed
   get ":username/followers" => "users#followers", as: :followers
