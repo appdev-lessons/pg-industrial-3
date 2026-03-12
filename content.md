@@ -77,7 +77,7 @@ resources :photos do
 end
 ```
 
-This creates nested routes like `/photos/1/comments` and `/photos/1/likes`. These are useful for viewing all comments or likes on a specific photo. The `only: [:index]` restricts the nested routes to just the `index` action — we don't need nested `new`, `create`, etc. because comments and likes are created through the standalone routes above.
+This creates nested routes like `/photos/1/comments` and `/photos/1/likes`. These are useful for viewing all comments or likes on a specific photo. The `only: [:index]` restricts the nested routes to just the `index` action, since we don't need nested `new`, `create`, etc. because comments and likes are created through the standalone routes above.
 
 ### Users index
 
@@ -98,7 +98,7 @@ get ":username/pending" => "users#pending", as: :pending
 get ":username/discover" => "users#discover", as: :discover
 ```
 
-These are the most interesting routes. Instead of `/users/42`, we use `/alice` — a vanity URL with the username right in the path. Each route captures the `:username` segment from the URL and passes it to the appropriate controller action.
+These are the most interesting routes. Instead of `/users/42`, we use `/alice`, a vanity URL with the username right in the path. Each route captures the `:username` segment from the URL and passes it to the appropriate controller action.
 
 <div class="alert alert-danger">
 
@@ -130,12 +130,12 @@ Create a new directory and file at `app/views/shared/_cdn_assets.html.erb`:
 {: filename="app/views/shared/_cdn_assets.html.erb" }
 
 We're loading three things:
-1. **Bootstrap CSS** — for the grid system, utility classes, and component styles
-2. **Bootstrap JS** — for interactive components like modals, dropdowns, and dismissable alerts
-3. **Font Awesome** — for icons throughout the interface (hearts, houses, magnifying glasses, etc.)
+1. **Bootstrap CSS**: the grid system, utility classes, and component styles
+2. **Bootstrap JS**: interactive components like modals, dropdowns, and dismissable alerts
+3. **Font Awesome**: icons throughout the interface (hearts, houses, magnifying glasses, etc.)
 
 <aside markdown="1">
-Why use a CDN instead of bundling these assets locally? CDNs are fast — they're distributed globally, and your users' browsers may already have the files cached from visiting other sites that use the same CDN. For a project like this, CDN links are simple and effective.
+Why use a CDN instead of bundling these assets locally? CDNs are fast. They're distributed globally, and your users' browsers may already have the files cached from visiting other sites that use the same CDN. For a project like this, CDN links are simple and effective.
 </aside>
 
 ## Flash messages partial
@@ -198,7 +198,7 @@ git commit -m "created shared partials for CDN assets, flash messages, and navba
 
 ## Updating the photo form partial
 
-The scaffold generated a `_form.html.erb` partial for photos, but it needs updating to work well in our layout — particularly inside the Bootstrap modal we're about to build. We need a file upload field for the image, a text area for the caption, and proper Bootstrap styling.
+The scaffold generated a `_form.html.erb` partial for photos, but it needs updating to work well in our layout, particularly inside the Bootstrap modal we're about to build. We need a file upload field for the image, a text area for the caption, and proper Bootstrap styling.
 
 Open `app/views/photos/_form.html.erb` and replace its contents with:
 
@@ -240,10 +240,10 @@ Open `app/views/photos/_form.html.erb` and replace its contents with:
 
 A few things worth noting:
 
-- `form_with(model: photo, class: "card-body")` — The form uses the `photo` local variable, which means it works for both new and existing photos. Rails automatically determines the correct URL and HTTP method.
-- `accept: "image/*"` on the file field — This tells the browser to only show image files in the file picker dialog.
-- `photo.persisted? && photo.image.attached?` — When editing an existing photo, we show the current image above the file field so the user can see what they're replacing.
-- Labels are `visually-hidden` — We use placeholders instead for a cleaner look, but the labels are still present for accessibility (screen readers can read them).
+- `form_with(model: photo, class: "card-body")`: the form uses the `photo` local variable, which means it works for both new and existing photos. Rails automatically determines the correct URL and HTTP method.
+- `accept: "image/*"` on the file field: this tells the browser to only show image files in the file picker dialog.
+- `photo.persisted? && photo.image.attached?`: when editing an existing photo, we show the current image above the file field so the user can see what they're replacing.
+- Labels are `visually-hidden`: we use placeholders instead for a cleaner look, but the labels are still present for accessibility (screen readers can read them).
 
 Now would be a good time for a commit:
 
@@ -464,7 +464,7 @@ This is a lot of code, so let's break it down section by section.
 <meta name="viewport" content="width=device-width,initial-scale=1">
 ```
 
-The `content_for(:title)` allows individual pages to set a custom title. If none is set, it falls back to the default. The viewport meta tag is essential for responsive design — without it, mobile browsers would render the page as if it were a desktop screen and then zoom out.
+The `content_for(:title)` allows individual pages to set a custom title. If none is set, it falls back to the default. The viewport meta tag is essential for responsive design. Without it, mobile browsers would render the page as if it were a desktop screen and then zoom out.
 
 We render our CDN assets partial here in the `<head>`, along with the application stylesheet and JavaScript imports.
 
@@ -482,7 +482,7 @@ We render our CDN assets partial here in the `<head>`, along with the applicatio
 
 This is a [Bootstrap modal](https://getbootstrap.com/docs/5.3/components/modal/) — an overlay dialog that appears when triggered. We include it on _every_ page so that users can add a photo from anywhere in the app. The `current_user.own_photos.build` creates a new, unsaved Photo object associated with the current user, which the form partial uses to generate the correct form fields.
 
-The modal is triggered by buttons with `data-bs-toggle="modal"` and `data-bs-target="#new_photo"` — you'll see those buttons in the left sidebar and the floating action button.
+The modal is triggered by buttons with `data-bs-toggle="modal"` and `data-bs-target="#new_photo"`. You'll see those buttons in the left sidebar and the floating action button.
 
 ### Flash messages
 
@@ -529,14 +529,14 @@ The `<%= yield %>` in the center column is where the content from each page's vi
 The left sidebar contains a vertical navigation menu wrapped in `sticky-top`, which keeps it visible as the user scrolls. Key elements:
 
 - **User dropdown**: Shows the current user's avatar, display name, and username. Clicking it reveals a dropdown with "Go to profile" and "Sign out" options. The `button_to` for sign out uses `method: :delete` because Devise expects a DELETE request.
-- **Navigation links**: Feed, Discover, Add photo, Profile, and Settings. Each uses a Font Awesome icon and a text label. The text labels use `d-xl-inline d-none` to only appear on extra-large screens — on medium and large screens, only the icons show, keeping the sidebar compact.
+- **Navigation links**: Feed, Discover, Add photo, Profile, and Settings. Each uses a Font Awesome icon and a text label. The text labels use `d-xl-inline d-none` to only appear on extra-large screens. On medium and large screens, only the icons show, keeping the sidebar compact.
 - **Add photo button**: Uses `button_tag` with Bootstrap modal data attributes instead of a link, since it opens the modal overlay rather than navigating to a new page.
 
 ### Right sidebar
 
 The right sidebar has two elements:
 
-1. **Search form**: Uses the Ransack gem's `search_form_for` helper with the `@q` search object (which we'll set up in `ApplicationController` shortly). The `:username_cont` search field means "username contains" — Ransack generates the correct SQL `LIKE` query automatically. The form is hidden below extra-extra-large screens (`d-none d-xxl-block`).
+1. **Search form**: Uses the Ransack gem's `search_form_for` helper with the `@q` search object (which we'll set up in `ApplicationController` shortly). The `:username_cont` search field means "username contains." Ransack generates the correct SQL `LIKE` query automatically. The form is hidden below extra-extra-large screens (`d-none d-xxl-block`).
 
 2. **Floating action button**: A circular "Add photo" button fixed to the bottom-right corner of the screen. The `style="left: unset"` prevents Bootstrap's `fixed-bottom` from stretching it across the full width.
 
@@ -546,7 +546,7 @@ The right sidebar has two elements:
 <nav class="navbar fixed-bottom bg-body-tertiary d-block d-sm-none">
 ```
 
-This navigation bar only appears on extra-small screens (`d-block d-sm-none`). It uses `fixed-bottom` to stick to the bottom of the screen — just like Instagram's mobile app. It provides quick access to Feed, Discover, Profile, and Settings.
+This navigation bar only appears on extra-small screens (`d-block d-sm-none`). It uses `fixed-bottom` to stick to the bottom of the screen, just like Instagram's mobile app. It provides quick access to Feed, Discover, Profile, and Settings.
 
 <aside markdown="1">
 Notice how we use Bootstrap's responsive display utilities (`d-none`, `d-md-block`, `d-sm-none`, etc.) throughout the layout to show and hide elements at different screen sizes. This is much easier than writing custom media queries. The sidebars and bottom nav work together to provide navigation on every screen size.
@@ -563,9 +563,9 @@ git commit -m "built application layout with three-column design and responsive 
 
 Now let's set up the `ApplicationController`. This is the parent class of all our controllers, so anything we put here applies to every page in the app. We need three things:
 
-1. **Authentication** — require sign-in to access any page
-2. **Permitted parameters** — tell Devise which custom fields to allow
-3. **Ransack search** — set up the search object for the layout's search bar
+1. **Authentication**: require sign-in to access any page
+2. **Permitted parameters**: tell Devise which custom fields to allow
+3. **Ransack search**: set up the search object for the layout's search bar
 
 Open `app/controllers/application_controller.rb`. Right now it's empty:
 
@@ -624,7 +624,7 @@ end
 
 By default, Devise only permits `email`, `password`, and `password_confirmation`. Since we added custom columns to our User model, we need to explicitly tell Devise to allow them through. The `:sign_up` sanitizer controls which fields are accepted during registration, and the `:account_update` sanitizer controls which fields are accepted when editing a profile.
 
-Notice that `:sign_up` only permits `:display_name` and `:username` — we don't want users uploading avatars or setting bios during registration. Those are for the account update form. Also note `:remove_profile_banner` in the account update list — this is the virtual attribute we set up on the User model in Part 2 for removing the banner image via a checkbox.
+Notice that `:sign_up` only permits `:display_name` and `:username`, since we don't want users uploading avatars or setting bios during registration. Those are for the account update form. Also note `:remove_profile_banner` in the account update list. This is the virtual attribute we set up on the User model in Part 2 for removing the banner image via a checkbox.
 
 ### Setting up Ransack search
 
@@ -636,12 +636,12 @@ def set_user_search
 end
 ```
 
-The `set_user_search` method creates a Ransack search object `@q` and stores it in an instance variable. Since this runs in `ApplicationController`, `@q` is available in _every_ view template — including the layout, where our search form lives. The `if: -> { current_user.present? }` condition skips this when no user is signed in (since the search bar isn't shown to signed-out users anyway).
+The `set_user_search` method creates a Ransack search object `@q` and stores it in an instance variable. Since this runs in `ApplicationController`, `@q` is available in _every_ view template, including the layout, where our search form lives. The `if: -> { current_user.present? }` condition skips this when no user is signed in (since the search bar isn't shown to signed-out users anyway).
 
 When someone submits the search form, the params will include something like `q[username_cont]=ali`. Ransack parses this and generates a query like `WHERE username ILIKE '%ali%'`. The `_cont` suffix is a Ransack predicate meaning "contains."
 
 <aside markdown="1">
-Remember that we whitelisted `username` as a searchable attribute back in Part 2 with `ransackable_attributes`. Without that whitelist, Ransack would refuse to search at all — it's a security measure to prevent people from searching sensitive fields like `email` or `encrypted_password`.
+Remember that we whitelisted `username` as a searchable attribute back in Part 2 with `ransackable_attributes`. Without that whitelist, Ransack would refuse to search at all. It's a security measure to prevent people from searching sensitive fields like `email` or `encrypted_password`.
 </aside>
 
 Now would be a good time for a commit:
@@ -743,7 +743,7 @@ def discover
 end
 ```
 
-These actions leverage the `has_many :through` associations we built in Part 2. `@user.feed` returns all photos posted by people `@user` follows. `@user.discover` returns all photos liked by people `@user` follows. The heavy lifting is done by the model — the controller just passes the data to the view.
+These actions leverage the `has_many :through` associations we built in Part 2. `@user.feed` returns all photos posted by people `@user` follows. `@user.discover` returns all photos liked by people `@user` follows. The heavy lifting is done by the model; the controller just passes the data to the view.
 
 ### Follows, Followers, and Pending
 
@@ -761,10 +761,10 @@ def pending
 end
 ```
 
-These are straightforward — each action uses an association we defined on the User model. `leaders` gives us the people `@user` follows, `followers` gives us the people who follow `@user`, and `pending_received_follow_requests` gives us follow requests that `@user` hasn't responded to yet.
+These are straightforward. Each action uses an association we defined on the User model. `leaders` gives us the people `@user` follows, `followers` gives us the people who follow `@user`, and `pending_received_follow_requests` gives us follow requests that `@user` hasn't responded to yet.
 
 <aside markdown="1">
-Notice that we don't have a `before_action :set_user` on the `index` action. That's intentional — the search results page doesn't operate on a single user.
+Notice that we don't have a `before_action :set_user` on the `index` action. That's intentional. The search results page doesn't operate on a single user.
 </aside>
 
 Now would be a good time for a commit:
@@ -778,9 +778,9 @@ git commit -m "created UsersController with feed, discover, follows, followers, 
 
 The scaffold generator gave us working controllers for Photos, Comments, Likes, and FollowRequests. But they need several modifications to work properly in our application:
 
-1. **Auto-assigning the current user** — Instead of relying on form fields for `owner_id`, `author_id`, `fan_id`, and `sender_id`, we should set these from `current_user` in the controller. This is both more secure (users can't fake someone else's identity) and more convenient.
-2. **Redirect behavior** — Some actions should redirect back to where the user came from rather than to the created/destroyed record.
-3. **Business logic** — The FollowRequests controller needs to auto-accept requests for public accounts.
+1. **Auto-assigning the current user**: instead of relying on form fields for `owner_id`, `author_id`, `fan_id`, and `sender_id`, we should set these from `current_user` in the controller. This is both more secure (users can't fake someone else's identity) and more convenient.
+2. **Redirect behavior**: some actions should redirect back to where the user came from rather than to the created/destroyed record.
+3. **Business logic**: the FollowRequests controller needs to auto-accept requests for public accounts.
 
 ### PhotosController
 
@@ -799,7 +799,7 @@ Open `app/controllers/photos_controller.rb`. The scaffold generated a standard C
 ```
 {: filename="app/controllers/photos_controller.rb" }
 
-Instead of accepting `owner_id` from the form (which could be tampered with), we set it from `current_user`. This is a security best practice — never trust user input for the identity of who's performing an action.
+Instead of accepting `owner_id` from the form (which could be tampered with), we set it from `current_user`. This is a security best practice: never trust user input for the identity of who's performing an action.
 
 **2. Change `destroy` to redirect back:**
 
@@ -812,7 +812,7 @@ Instead of accepting `owner_id` from the form (which could be tampered with), we
 ```
 {: filename="app/controllers/photos_controller.rb" }
 
-The scaffold redirected to `photos_url` (the index page). We use `redirect_back` instead, which sends the user back to wherever they came from (their feed, a profile page, etc.). The `fallback_location: root_url` is a safety net — if there's no referer header, it redirects to the homepage.
+The scaffold redirected to `photos_url` (the index page). We use `redirect_back` instead, which sends the user back to wherever they came from (their feed, a profile page, etc.). The `fallback_location: root_url` is a safety net in case there's no referer header, it redirects to the homepage.
 
 **3. Update `photo_params`:**
 
@@ -823,7 +823,7 @@ The scaffold redirected to `photos_url` (the index page). We use `redirect_back`
 ```
 {: filename="app/controllers/photos_controller.rb" }
 
-We permit `:image`, `:pinned`, and `:caption`. Notice that `:owner_id` is _not_ in this list — we set that in the controller, not from form params.
+We permit `:image`, `:pinned`, and `:caption`. Notice that `:owner_id` is _not_ in this list because we set that in the controller, not from form params.
 
 ### CommentsController
 
@@ -842,7 +842,7 @@ Open `app/controllers/comments_controller.rb`. We need to make a few changes fro
 ```
 {: filename="app/controllers/comments_controller.rb" }
 
-Same pattern as photos — we set the author from `current_user` rather than trusting form input.
+Same pattern as photos: we set the author from `current_user` rather than trusting form input.
 
 **2. Redirect back after create and destroy:**
 
@@ -908,7 +908,7 @@ The `index` action now expects a `photo_id` parameter (from the nested route `/p
 ```
 {: filename="app/controllers/likes_controller.rb" }
 
-Same pattern — the current user is automatically set as the fan.
+Same pattern: the current user is automatically set as the fan.
 
 **3. Redirect back to the photo after create and destroy:**
 
@@ -930,7 +930,7 @@ And similarly for `destroy`:
 ```
 {: filename="app/controllers/likes_controller.rb" }
 
-After liking or unliking a photo, the user stays on the same page. The `fallback_location` is `@like.photo` — the photo that was liked.
+After liking or unliking a photo, the user stays on the same page. The `fallback_location` is `@like.photo`, the photo that was liked.
 
 ### FollowRequestsController
 
@@ -952,7 +952,7 @@ Open `app/controllers/follow_requests_controller.rb`. We need to make a few chan
 ```
 {: filename="app/controllers/follow_requests_controller.rb" }
 
-This is the most interesting controller logic. First, we set the `sender` to `current_user`. Then we check if the recipient's account is public (`private?` returns `false`). If it is public, we automatically accept the follow request — the user doesn't need to wait for approval. If the account is private, the status stays as `"pending"` (the default we set in the migration), and the recipient will need to accept it manually.
+This is the most interesting controller logic. First, we set the `sender` to `current_user`. Then we check if the recipient's account is public (`private?` returns `false`). If it is public, we automatically accept the follow request, so the user doesn't need to wait for approval. If the account is private, the status stays as `"pending"` (the default we set in the migration), and the recipient will need to accept it manually.
 
 **2. Redirect back after create, update, and destroy:**
 
@@ -965,7 +965,7 @@ Change all three actions to use `redirect_back`:
 ```
 {: filename="app/controllers/follow_requests_controller.rb" }
 
-All three actions use `redirect_back fallback_location: root_url`. Follow/unfollow actions happen from profile pages, the discover page, and other places — we always want to send the user back to where they were.
+All three actions use `redirect_back fallback_location: root_url`. Follow/unfollow actions happen from profile pages, the discover page, , so we always want to send the user back to where they were.
 
 Now would be a good time for a commit:
 
@@ -989,7 +989,7 @@ Try starting your server with `bin/dev` and visiting `/`. You should be redirect
 
 <div class="alert alert-info">
 
-The views won't look complete yet — we haven't built the feed, discover, profile, or other view templates. You may see errors when clicking through to pages like Feed or Discover because the view files don't exist yet. That's expected! We'll build all of those views in Part 4.
+The views won't look complete yet because we haven't built the feed, discover, profile, or other view templates. You may see errors when clicking through to pages like Feed or Discover because the view files don't exist yet. That's expected! We'll build all of those views in Part 4.
 </div>
 
 Now would be a good time for a final commit and push:
@@ -1000,7 +1000,7 @@ git commit -m "completed Part 3: routes, layout, and controllers"
 git push -u origin HEAD
 ```
 
-In the next part, we'll build out all of the view templates — the feed, discover page, user profiles, photo detail pages, and more.
+In the next part, we'll build out all of the view templates: the feed, discover page, user profiles, photo detail pages, and more.
 
 ---
 
