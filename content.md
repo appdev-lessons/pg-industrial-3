@@ -1007,12 +1007,12 @@ git push
 
 At this point, you should have:
 
-1. Routes set up with nested resources, vanity URLs, and named path helpers
-2. Shared partials for CDN assets, flash messages, and the mobile navbar
-3. A complete application layout with a three-column responsive design
-4. `ApplicationController` configured with authentication, Devise permitted parameters, and Ransack search
-5. A hand-built `UsersController` with feed, discover, followers, follows, and pending actions
-6. All four scaffold controllers customized with `current_user` auto-assignment and proper redirects
+1. Routes set up with nested resources, vanity URLs, and named path helpers.
+2. Shared partials for CDN assets, flash messages, and the mobile navbar.
+3. A complete application layout with a three-column responsive design.
+4. `ApplicationController` configured with authentication, Devise permitted parameters, and Ransack search.
+5. A hand-built `UsersController` with feed, discover, followers, follows, and pending actions.
+6. All four scaffold controllers customized with `current_user` auto-assignment and proper redirects.
 
 Try starting your server with `bin/server` and visiting `/`. You should be redirected to the sign-in page. Sign in with one of the sample data accounts (e.g., `alice@example.com` / `appdev`) and you should see the three-column layout with navigation links in the left sidebar.
 
