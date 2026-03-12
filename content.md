@@ -16,7 +16,13 @@ Make sure your sample data is loaded before continuing:
 rake sample_data
 ```
 
-Let's create a new branch for this work:
+Since each lesson builds on the work from the previous one, we want to branch off of our last branch rather than `main`. First, check out the branch from Part 2:
+
+```
+git checkout models-and-associations
+```
+
+Now create a new branch from there:
 
 ```
 git checkout -b routes-layout-controllers
