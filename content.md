@@ -16,7 +16,7 @@ Make sure your sample data is loaded before continuing:
 rake sample_data
 ```
 
-Since each lesson builds on the work from the previous one, we want to branch off of our last branch rather than `main`. First, check out the branch from Part 2:
+Since each lesson builds on the work from the previous one, we want to branch off of our last branch rather than `main`. First, check out the branch from the previous lesson:
 
 ```
 git checkout models-and-associations
