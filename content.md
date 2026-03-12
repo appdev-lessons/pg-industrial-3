@@ -19,7 +19,7 @@ rake sample_data
 Let's create a new branch for this work:
 
 ```
-git checkout -b <your-initials>-routes-layout-controllers
+git checkout -b routes-layout-controllers
 ```
 
 ## Setting up routes
@@ -111,7 +111,7 @@ Now would be a good time for a commit:
 
 ```
 git add -A
-git commit -m "set up routes with nested resources and vanity URLs"
+git commit -m "Set up routes with nested resources and vanity URLs"
 ```
 
 ## CDN assets partial
@@ -193,7 +193,7 @@ Now would be a good time for a commit:
 
 ```
 git add -A
-git commit -m "created shared partials for CDN assets, flash messages, and navbar"
+git commit -m "Created shared partials for CDN assets, flash messages, and navbar"
 ```
 
 ## Updating the photo form partial
@@ -249,7 +249,7 @@ Now would be a good time for a commit:
 
 ```
 git add -A
-git commit -m "updated photo form partial with Bootstrap styling and file upload"
+git commit -m "Updated photo form partial with Bootstrap styling and file upload"
 ```
 
 ## The application layout
@@ -556,7 +556,7 @@ Now would be a good time for a commit:
 
 ```
 git add -A
-git commit -m "built application layout with three-column design and responsive navigation"
+git commit -m "Built application layout with three-column design and responsive navigation"
 ```
 
 ## ApplicationController
@@ -648,7 +648,7 @@ Now would be a good time for a commit:
 
 ```
 git add -A
-git commit -m "configured ApplicationController with auth, permitted params, and Ransack search"
+git commit -m "Configured ApplicationController with auth, permitted params, and Ransack search"
 ```
 
 ## Creating the UsersController
@@ -771,7 +771,7 @@ Now would be a good time for a commit:
 
 ```
 git add -A
-git commit -m "created UsersController with feed, discover, follows, followers, and pending actions"
+git commit -m "Created UsersController with feed, discover, follows, followers, and pending actions"
 ```
 
 ## Customizing scaffold controllers
@@ -971,7 +971,7 @@ Now would be a good time for a commit:
 
 ```
 git add -A
-git commit -m "customized scaffold controllers with auto-assignment, redirect_back, and follow logic"
+git commit -m "Customized scaffold controllers with auto-assignment, redirect_back, and follow logic"
 ```
 
 ## Verify your progress
@@ -996,7 +996,7 @@ Now would be a good time for a final commit and push:
 
 ```
 git add -A
-git commit -m "completed Part 3: routes, layout, and controllers"
+git commit -m "Completed Part 3: routes, layout, and controllers"
 git push -u origin HEAD
 ```
 
