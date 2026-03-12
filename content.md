@@ -786,19 +786,15 @@ The scaffold generator gave us working controllers for Photos, Comments, Likes, 
 
 Open `app/controllers/photos_controller.rb`. The scaffold generated a standard CRUD controller. We need to make a few changes. Here's the complete target:
 
-```ruby{2,17}
+```ruby{2,13}
 class PhotosController < ApplicationController
-  before_action :set_photo, only: %i[ show edit likes update destroy ]
+  before_action :set_photo, only: %i[ show edit update destroy ]
 
   def index
     @photos = Photo.all
   end
 
   def show
-  end
-
-  def likes
-    @likes = @photo.likes
   end
 
   def new
@@ -857,21 +853,7 @@ end
 
 Here's what changed from the scaffold:
 
-**1. Added `likes` to the `before_action` and created the `likes` action:**
-
-```ruby{2,11-13}
-  before_action :set_photo, only: %i[ show edit likes update destroy ]
-
-  # ...
-
-  def likes
-    @likes = @photo.likes
-  end
-```
-
-We added a `likes` action that fetches all likes for a photo. This supports the nested route `/photos/:photo_id/likes`. We also added `:likes` to the `set_photo` before_action so that `@photo` is available in this action.
-
-**2. Auto-assigned the owner in `create`:**
+**1. Auto-assigned the owner in `create`:**
 
 ```ruby{3}
   def create
@@ -881,7 +863,7 @@ We added a `likes` action that fetches all likes for a photo. This supports the 
 
 Instead of accepting `owner_id` from the form (which could be tampered with), we set it from `current_user`. This is a security best practice — never trust user input for the identity of who's performing an action.
 
-**3. Changed `destroy` to redirect back:**
+**2. Changed `destroy` to redirect back:**
 
 ```ruby{4}
   def destroy
@@ -892,7 +874,7 @@ Instead of accepting `owner_id` from the form (which could be tampered with), we
 
 The scaffold redirected to `photos_url` (the index page). We use `redirect_back` instead, which sends the user back to wherever they came from (their feed, a profile page, etc.). The `fallback_location: root_url` is a safety net — if there's no referer header, it redirects to the homepage.
 
-**4. Updated `photo_params`:**
+**3. Updated `photo_params`:**
 
 ```ruby
   def photo_params
