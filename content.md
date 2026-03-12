@@ -6,7 +6,7 @@ Let's continue building our Photogram Industrial project. Here's the target we'r
 
 [pg-industrial.matchthetarget.com](https://pg-industrial.matchthetarget.com/)
 
-Navigate to `github.com/codespaces` (or reopen the previous lesson and use the "Load assignment" button) and reopen your `photogram-industrial` project codespace to continue building on what you accomplished in _Photogram Industrial Parts 1 and 2_.
+Navigate to `github.com/codespaces` (or reopen the previous lesson and use the "Load assignment" button) and reopen your `photogram-industrial` project codespace to continue building on what you accomplished in the previous lessons.
 
 At this point, you should have all five models (User, Photo, Comment, Like, FollowRequest) with their associations, validations, scopes, and sample data loaded. In this lesson, we'll shift our focus from the data layer to the interface layer: routes, the application layout, shared partials, and controllers.
 
@@ -30,7 +30,7 @@ git checkout -b routes-layout-controllers
 
 ## Setting up routes
 
-The scaffold generators from Parts 1 and 2 already added some routes for us, and Devise added `devise_for :users`. But our application needs more than basic CRUD routes. We need vanity URL routes like `/:username` for user profiles, nested routes for viewing a photo's comments and likes, and dedicated pages for feed, discover, followers, and more.
+The scaffold generators from the previous lessons already added some routes for us, and Devise added `devise_for :users`. But our application needs more than basic CRUD routes. We need vanity URL routes like `/:username` for user profiles, nested routes for viewing a photo's comments and likes, and dedicated pages for feed, discover, followers, and more.
 
 Open `config/routes.rb`. Right now it probably looks something like this:
 
@@ -644,7 +644,7 @@ end
 
 By default, Devise only permits `email`, `password`, and `password_confirmation`. Since we added custom columns to our User model, we need to explicitly tell Devise to allow them through. The `:sign_up` sanitizer controls which fields are accepted during registration, and the `:account_update` sanitizer controls which fields are accepted when editing a profile.
 
-Notice that `:sign_up` only permits `:display_name` and `:username`, since we don't want users uploading avatars or setting bios during registration. Those are for the account update form. Also note `:remove_profile_banner` in the account update list. This is the virtual attribute we set up on the User model in Part 2 for removing the banner image via a checkbox.
+Notice that `:sign_up` only permits `:display_name` and `:username`, since we don't want users uploading avatars or setting bios during registration. Those are for the account update form. Also note `:remove_profile_banner` in the account update list. This is the virtual attribute we set up on the User model in the previous lesson for removing the banner image via a checkbox.
 
 ### Setting up Ransack search
 
@@ -661,7 +661,7 @@ The `set_user_search` method creates a Ransack search object `@q` and stores it 
 When someone submits the search form, the params will include something like `q[username_cont]=ali`. Ransack parses this and generates a query like `WHERE username ILIKE '%ali%'`. The `_cont` suffix is a Ransack predicate meaning "contains."
 
 <aside markdown="1">
-Remember that we whitelisted `username` as a searchable attribute back in Part 2 with `ransackable_attributes`. Without that whitelist, Ransack would refuse to search at all. It's a security measure to prevent people from searching sensitive fields like `email` or `encrypted_password`.
+Remember that we whitelisted `username` as a searchable attribute in the previous lesson with `ransackable_attributes`. Without that whitelist, Ransack would refuse to search at all. It's a security measure to prevent people from searching sensitive fields like `email` or `encrypted_password`.
 </aside>
 
 Now would be a good time for a commit:
@@ -766,7 +766,7 @@ def discover
 end
 ```
 
-These actions leverage the `has_many :through` associations we built in Part 2. `@user.feed` returns all photos posted by people `@user` follows. `@user.discover` returns all photos liked by people `@user` follows. The heavy lifting is done by the model; the controller just passes the data to the view.
+These actions leverage the `has_many :through` associations we built in the previous lesson. `@user.feed` returns all photos posted by people `@user` follows. `@user.discover` returns all photos liked by people `@user` follows. The heavy lifting is done by the model; the controller just passes the data to the view.
 
 ### Follows, Followers, and Pending
 
@@ -1018,20 +1018,20 @@ Try starting your server with `bin/dev` and visiting `/`. You should be redirect
 
 <div class="alert alert-info">
 
-The views won't look complete yet because we haven't built the feed, discover, profile, or other view templates. You may see errors when clicking through to pages like Feed or Discover because the view files don't exist yet. That's expected! We'll build all of those views in Part 4.
+The views won't look complete yet because we haven't built the feed, discover, profile, or other view templates. You may see errors when clicking through to pages like Feed or Discover because the view files don't exist yet. That's expected! We'll build all of those views in the next lesson.
 </div>
 
 Now would be a good time for a final commit and push:
 
 ```
 git add -A
-git commit -m "Completed Part 3: routes, layout, and controllers"
+git commit -m "Completed routes, layout, and controllers"
 git push
 ```
 
 [See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
 
-In the next part, we'll build out all of the view templates: the feed, discover page, user profiles, photo detail pages, and more.
+In the next lesson, we'll build out all of the view templates: the feed, discover page, user profiles, photo detail pages, and more.
 
 ---
 
