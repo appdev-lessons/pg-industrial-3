@@ -784,276 +784,106 @@ The scaffold generator gave us working controllers for Photos, Comments, Likes, 
 
 ### PhotosController
 
-Open `app/controllers/photos_controller.rb`. The scaffold generated a standard CRUD controller. We need to make a few changes. Here's the complete target:
+Open `app/controllers/photos_controller.rb`. The scaffold generated a standard CRUD controller. We need to make a few changes from the scaffold:
 
-```ruby{2,13}
-class PhotosController < ApplicationController
-  before_action :set_photo, only: %i[ show edit update destroy ]
+**1. Auto-assign the owner in `create`:**
 
-  def index
-    @photos = Photo.all
-  end
-
-  def show
-  end
-
-  def new
-    @photo = Photo.new
-  end
-
-  def edit
-  end
-
+```ruby{3}
+  # ...
   def create
     @photo = Photo.new(photo_params)
     @photo.owner = current_user
 
     respond_to do |format|
-      if @photo.save
-        format.html { redirect_to @photo, notice: "Photo was successfully created." }
-        format.json { render :show, status: :created, location: @photo }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @photo.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def update
-    respond_to do |format|
-      if @photo.update(photo_params)
-        format.html { redirect_to @photo, notice: "Photo was successfully updated." }
-        format.json { render :show, status: :ok, location: @photo }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @photo.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def destroy
-    @photo.destroy
-    respond_to do |format|
-      format.html { redirect_back fallback_location: root_url, notice: "Photo was successfully destroyed." }
-      format.json { head :no_content }
-    end
-  end
-
-  private
-    def set_photo
-      @photo = Photo.find(params.expect(:id))
-    end
-
-    def photo_params
-      params.expect(photo: [:image, :pinned, :caption])
-    end
-end
+      # ...
 ```
 {: filename="app/controllers/photos_controller.rb" }
 
-Here's what changed from the scaffold:
-
-**1. Auto-assigned the owner in `create`:**
-
-```ruby{3}
-  def create
-    @photo = Photo.new(photo_params)
-    @photo.owner = current_user
-```
-
 Instead of accepting `owner_id` from the form (which could be tampered with), we set it from `current_user`. This is a security best practice — never trust user input for the identity of who's performing an action.
 
-**2. Changed `destroy` to redirect back:**
+**2. Change `destroy` to redirect back:**
 
 ```ruby{4}
   def destroy
     @photo.destroy
     respond_to do |format|
       format.html { redirect_back fallback_location: root_url, notice: "Photo was successfully destroyed." }
+      # ...
 ```
+{: filename="app/controllers/photos_controller.rb" }
 
 The scaffold redirected to `photos_url` (the index page). We use `redirect_back` instead, which sends the user back to wherever they came from (their feed, a profile page, etc.). The `fallback_location: root_url` is a safety net — if there's no referer header, it redirects to the homepage.
 
-**3. Updated `photo_params`:**
+**3. Update `photo_params`:**
 
-```ruby
+```ruby{2:(27-52)}
   def photo_params
     params.expect(photo: [:image, :pinned, :caption])
   end
 ```
+{: filename="app/controllers/photos_controller.rb" }
 
 We permit `:image`, `:pinned`, and `:caption`. Notice that `:owner_id` is _not_ in this list — we set that in the controller, not from form params.
 
 ### CommentsController
 
-Open `app/controllers/comments_controller.rb` and update it to match:
-
-```ruby
-class CommentsController < ApplicationController
-  before_action :set_comment, only: %i[ show edit update destroy ]
-
-  def index
-    @comments = Comment.all
-  end
-
-  def show
-  end
-
-  def new
-    @comment = Comment.new
-  end
-
-  def edit
-  end
-
-  def create
-    @comment = Comment.new(comment_params)
-    @comment.author = current_user
-
-    respond_to do |format|
-      if @comment.save
-        format.html { redirect_back fallback_location: root_path, notice: "Comment was successfully created." }
-        format.json { render :show, status: :created, location: @comment }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def update
-    respond_to do |format|
-      if @comment.update(comment_params)
-        format.html { redirect_to root_url, notice: "Comment was successfully updated." }
-        format.json { render :show, status: :ok, location: @comment }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def destroy
-    @comment.destroy
-    respond_to do |format|
-      format.html { redirect_back fallback_location: root_url, notice: "Comment was successfully destroyed." }
-      format.json { head :no_content }
-    end
-  end
-
-  private
-    def set_comment
-      @comment = Comment.find(params.expect(:id))
-    end
-
-    def comment_params
-      params.expect(comment: [:author_id, :photo_id, :body])
-    end
-end
-```
-{: filename="app/controllers/comments_controller.rb" }
-
-The key changes from the scaffold:
+Open `app/controllers/comments_controller.rb`. We need to make a few changes from the scaffold:
 
 **1. Auto-assign the author:**
 
 ```ruby{3}
+  # ...
   def create
     @comment = Comment.new(comment_params)
     @comment.author = current_user
+
+    respond_to do |format|
+      # ...
 ```
+{: filename="app/controllers/comments_controller.rb" }
 
 Same pattern as photos — we set the author from `current_user` rather than trusting form input.
 
 **2. Redirect back after create and destroy:**
 
-```ruby
-format.html { redirect_back fallback_location: root_path, notice: "Comment was successfully created." }
+Change the `create` action's redirect to go back to the previous page:
+
+```ruby{3}
+      if @comment.save
+        format.html { redirect_back fallback_location: root_path, notice: "Comment was successfully created." }
+        # ...
 ```
+{: filename="app/controllers/comments_controller.rb" }
+
+And do the same for `destroy`:
+
+```ruby{4}
+  def destroy
+    @comment.destroy
+    respond_to do |format|
+      format.html { redirect_back fallback_location: root_url, notice: "Comment was successfully destroyed." }
+      # ...
+```
+{: filename="app/controllers/comments_controller.rb" }
 
 Comments are created and deleted inline on the feed/photo pages, so we want to redirect back to wherever the user was rather than navigating to a separate comments page.
 
 **3. Redirect to root after update:**
 
-```ruby
-format.html { redirect_to root_url, notice: "Comment was successfully updated." }
+```ruby{3}
+      if @comment.update(comment_params)
+        format.html { redirect_to root_url, notice: "Comment was successfully updated." }
+        # ...
 ```
+{: filename="app/controllers/comments_controller.rb" }
 
 After editing a comment, we send the user back to the homepage.
 
 ### LikesController
 
-Open `app/controllers/likes_controller.rb` and update it:
+Open `app/controllers/likes_controller.rb`. We need to make a few changes from the scaffold:
 
-```ruby
-class LikesController < ApplicationController
-  before_action :set_like, only: %i[ show edit update destroy ]
-
-  def index
-    @photo = Photo.find(params[:photo_id])
-    @likes = @photo.likes
-  end
-
-  def show
-  end
-
-  def new
-    @like = Like.new
-  end
-
-  def edit
-  end
-
-  def create
-    @like = Like.new(like_params)
-    @like.fan = current_user
-
-    respond_to do |format|
-      if @like.save
-        format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully created." }
-        format.json { render :show, status: :created, location: @like }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @like.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def update
-    respond_to do |format|
-      if @like.update(like_params)
-        format.html { redirect_to @like, notice: "Like was successfully updated." }
-        format.json { render :show, status: :ok, location: @like }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @like.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def destroy
-    @like.destroy
-    respond_to do |format|
-      format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully destroyed." }
-      format.json { head :no_content }
-    end
-  end
-
-  private
-    def set_like
-      @like = Like.find(params.expect(:id))
-    end
-
-    def like_params
-      params.expect(like: [:fan_id, :photo_id])
-    end
-end
-```
-{: filename="app/controllers/likes_controller.rb" }
-
-The key changes:
-
-**1. Updated `index` to find likes through a photo:**
+**1. Update `index` to find likes through a photo:**
 
 ```ruby{2-3}
   def index
@@ -1061,115 +891,79 @@ The key changes:
     @likes = @photo.likes
   end
 ```
+{: filename="app/controllers/likes_controller.rb" }
 
 The `index` action now expects a `photo_id` parameter (from the nested route `/photos/:photo_id/likes`) and shows the likes for that specific photo.
 
 **2. Auto-assign the fan:**
 
 ```ruby{3}
+  # ...
   def create
     @like = Like.new(like_params)
     @like.fan = current_user
+
+    respond_to do |format|
+      # ...
 ```
+{: filename="app/controllers/likes_controller.rb" }
 
 Same pattern — the current user is automatically set as the fan.
 
 **3. Redirect back to the photo after create and destroy:**
 
-```ruby
-format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully created." }
+```ruby{3}
+      if @like.save
+        format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully created." }
+        # ...
 ```
+{: filename="app/controllers/likes_controller.rb" }
+
+And similarly for `destroy`:
+
+```ruby{4}
+  def destroy
+    @like.destroy
+    respond_to do |format|
+      format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully destroyed." }
+      # ...
+```
+{: filename="app/controllers/likes_controller.rb" }
 
 After liking or unliking a photo, the user stays on the same page. The `fallback_location` is `@like.photo` — the photo that was liked.
 
 ### FollowRequestsController
 
-Open `app/controllers/follow_requests_controller.rb` and update it:
-
-```ruby
-class FollowRequestsController < ApplicationController
-  before_action :set_follow_request, only: %i[ show edit update destroy ]
-
-  def index
-    @follow_requests = FollowRequest.all
-  end
-
-  def show
-  end
-
-  def new
-    @follow_request = FollowRequest.new
-  end
-
-  def edit
-  end
-
-  def create
-    @follow_request = FollowRequest.new(follow_request_params)
-    @follow_request.sender = current_user
-    unless @follow_request.recipient.private?
-      @follow_request.status = "accepted"
-    end
-
-    respond_to do |format|
-      if @follow_request.save
-        format.html { redirect_back fallback_location: root_url, notice: "Follow request was successfully created." }
-        format.json { render :show, status: :created, location: @follow_request }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @follow_request.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def update
-    respond_to do |format|
-      if @follow_request.update(follow_request_params)
-        format.html { redirect_back fallback_location: root_url, notice: "Follow request was successfully updated." }
-        format.json { render :show, status: :ok, location: @follow_request }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @follow_request.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def destroy
-    @follow_request.destroy
-    respond_to do |format|
-      format.html { redirect_back fallback_location: root_url, notice: "Follow request was successfully destroyed." }
-      format.json { head :no_content }
-    end
-  end
-
-  private
-    def set_follow_request
-      @follow_request = FollowRequest.find(params.expect(:id))
-    end
-
-    def follow_request_params
-      params.expect(follow_request: [:recipient_id, :sender_id, :status])
-    end
-end
-```
-{: filename="app/controllers/follow_requests_controller.rb" }
-
-The key changes:
+Open `app/controllers/follow_requests_controller.rb`. We need to make a few changes from the scaffold:
 
 **1. Auto-assign the sender and auto-accept for public accounts:**
 
 ```ruby{3-5}
+  # ...
   def create
     @follow_request = FollowRequest.new(follow_request_params)
     @follow_request.sender = current_user
     unless @follow_request.recipient.private?
       @follow_request.status = "accepted"
     end
+
+    respond_to do |format|
+      # ...
 ```
+{: filename="app/controllers/follow_requests_controller.rb" }
 
 This is the most interesting controller logic. First, we set the `sender` to `current_user`. Then we check if the recipient's account is public (`private?` returns `false`). If it is public, we automatically accept the follow request — the user doesn't need to wait for approval. If the account is private, the status stays as `"pending"` (the default we set in the migration), and the recipient will need to accept it manually.
 
 **2. Redirect back after create, update, and destroy:**
+
+Change all three actions to use `redirect_back`:
+
+```ruby{3}
+      if @follow_request.save
+        format.html { redirect_back fallback_location: root_url, notice: "Follow request was successfully created." }
+        # ...
+```
+{: filename="app/controllers/follow_requests_controller.rb" }
 
 All three actions use `redirect_back fallback_location: root_url`. Follow/unfollow actions happen from profile pages, the discover page, and other places — we always want to send the user back to where they were.
 
