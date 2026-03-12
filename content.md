@@ -36,16 +36,21 @@ Open `config/routes.rb`. Right now it probably looks something like this:
 
 ```ruby
 Rails.application.routes.draw do
-  get "up" => "rails/health#show", as: :rails_health_check
-  root "users#feed"
-  devise_for :users
   resources :likes
-  resources :comments
   resources :follow_requests
+  resources :comments
   resources :photos
+  devise_for :users
+  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
+  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  root "users#feed"
 end
 ```
 {: filename="config/routes.rb" }
+
+We haven't touched it much, besides adding that `root "users#feed` for Devise, and it looks like our generators have been filling it up for us! Great! But let's make some modifications.
 
 Replace the entire file with this, paying particular attention to the key highlighted additions:
 
@@ -78,7 +83,9 @@ end
 ```
 {: filename="config/routes.rb" }
 
-Let's walk through the key additions.
+There's some re-ordering of things, which is mostly cosmetic to keep things visually clear (e.g. `resources` are now top-down alphabetically: comments, follow requests, likes, photos).
+
+But, let's walk through some of the unfamiliar key additions.
 
 ### Nested routes
 
