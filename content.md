@@ -1014,7 +1014,7 @@ At this point, you should have:
 5. A hand-built `UsersController` with feed, discover, followers, follows, and pending actions
 6. All four scaffold controllers customized with `current_user` auto-assignment and proper redirects
 
-Try starting your server with `bin/dev` and visiting `/`. You should be redirected to the sign-in page. Sign in with one of the sample data accounts (e.g., `alice@example.com` / `appdev`) and you should see the three-column layout with navigation links in the left sidebar.
+Try starting your server with `bin/server` and visiting `/`. You should be redirected to the sign-in page. Sign in with one of the sample data accounts (e.g., `alice@example.com` / `appdev`) and you should see the three-column layout with navigation links in the left sidebar.
 
 <div class="alert alert-info">
 
