@@ -99,7 +99,7 @@ resources :photos
 
 which we know from previous lessons gives us the "seven golden" RESTful routes: index, new, create, show, edit, update, and destroy. From just that line we get `"/photos"`, `"/photos/:id"`, etc., and named helper methods like `photos_path` and `photos_url`.
 
-Our edit add a `do` block and _nested_ two resource paths under the photos resource:
+Our edit added a `do` block and _nested_ two resource paths under the photos resource:
 
 ```ruby{1:(18-20),2-4}
 resources :photos do
