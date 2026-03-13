@@ -324,7 +324,9 @@ The `form_with(model: photo, class: "card-body")` uses the `photo` local variabl
 
 Next, add the image upload field after the error block:
 
-```erb{3-7}
+```erb{5-11}
+      </ul>
+    </div>
   <% end %>
 
   <div class="form-group">
@@ -334,7 +336,9 @@ Next, add the image upload field after the error block:
     <% end %>
     <%= form.file_field :image, class: "form-control", accept: "image/*" %>
   </div>
-  <!-- ... -->
+
+  <div class="form-group my-1">
+    <!-- ... -->
 ```
 {: filename="app/views/photos/_form.html.erb" }
 
@@ -342,7 +346,8 @@ The `accept: "image/*"` tells the browser to only show image files in the file p
 
 Finally, add the caption field and submit button:
 
-```erb{3-4,7}
+```erb{4-11}
+    <%= form.file_field :image, class: "form-control", accept: "image/*" %>
   </div>
 
   <div class="form-group my-1">
@@ -388,7 +393,7 @@ Let's break down the layout piece by piece.
 
 The `<head>` section sets up the page title, viewport, icons, and loads our assets:
 
-```erb{3,12-14}
+```erb{3,13-15}
 <html>
   <head>
     <title><%= content_for(:title) || "Target: Photogram (Industrial)" %></title>
@@ -416,7 +421,7 @@ We render our CDN assets partial here in the `<head>`, along with the applicatio
 
 Right at the top of the `<body>`, add a [Bootstrap modal](https://getbootstrap.com/docs/5.3/components/modal/) for creating new photos:
 
-```erb{6}
+```erb{11}
   <body>
     <% if current_user.present? %>
       <div class="modal fade" id="new_photo" tabindex="-1" aria-labelledby="newPhotoLabel" aria-hidden="true">
@@ -436,7 +441,9 @@ Right at the top of the `<body>`, add a [Bootstrap modal](https://getbootstrap.c
         </div>
       </div>
     <% end %>
-    <!-- ... -->
+
+    <% if notice.present? || alert.present? %>
+      <!-- ... -->
 ```
 {: filename="app/views/layouts/application.html.erb" }
 
@@ -448,7 +455,10 @@ The modal is triggered by buttons with `data-bs-toggle="modal"` and `data-bs-tar
 
 After the modal, render flash messages centered on the page using Bootstrap's grid offset:
 
-```erb
+```erb{4-17}
+      </div>
+    <% end %>
+
     <% if notice.present? || alert.present? %>
       <div class="container">
         <div class="row mb-2">
@@ -463,6 +473,10 @@ After the modal, render flash messages centered on the page using Bootstrap's gr
         </div>
       </div>
     <% end %>
+
+    <%= render "shared/navbar" %>
+    <div class="container mt-5">
+      <!-- ... -->
 ```
 {: filename="app/views/layouts/application.html.erb" }
 
@@ -473,6 +487,9 @@ We only render this section if there's actually a flash message to show.
 After the flash messages and `<%= render "shared/navbar" %>`, the main content area uses [Bootstrap's grid system](https://getbootstrap.com/docs/5.3/layout/grid/):
 
 ```erb
+      </div>
+    <% end %>
+
     <%= render "shared/navbar" %>
     <div class="container mt-5">
       <div class="row">
@@ -498,7 +515,7 @@ The `<%= yield %>` in the center column is where the content from each page's vi
 
 Inside the left sidebar column, add a vertical navigation menu. Here's the structure (showing just one nav link for brevity):
 
-```erb{2,4,16-21}
+```erb{2,16-21}
         <div class="col-lg-2 offset-lg-1 col-md-2 d-none d-md-block">
           <% if current_user.present? %>
             <ul class="nav flex-column sticky-top">
@@ -567,7 +584,10 @@ Inside the right sidebar column, add a search form and a floating action button:
 
 After the closing `</div>` of the three-column container, add a fixed-bottom [navbar](https://getbootstrap.com/docs/5.3/components/navbar/) for small screens:
 
-```erb{2}
+```erb{5}
+      </div>
+    </div>
+
     <% if current_user.present? %>
       <nav class="navbar fixed-bottom bg-body-tertiary d-block d-sm-none">
         <div class="container-fluid">
@@ -640,7 +660,7 @@ This runs before every action in every controller. If the user isn't signed in, 
 
 Add another `before_action` above the authentication line, along with a `protected` method that it calls:
 
-```ruby{2,6-10}
+```ruby{2,6,8-11}
 class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :authenticate_user!
@@ -734,7 +754,7 @@ The `find_by!` method (with a bang!) raises an `ActiveRecord::RecordNotFound` ex
 
 Add the `index` action between the `before_action` line and `private`:
 
-```ruby{4-6}
+```ruby{3-5}
   before_action :set_user, only: %i[ show feed discover follows followers pending ]
 
   def index
@@ -756,7 +776,7 @@ Notice that we don't have a `before_action :set_user` on the `index` action. Tha
 
 Add `show`, `feed`, and `discover` actions after `index`:
 
-```ruby{4-10}
+```ruby{5-14}
   def index
     @users = @q.result
   end
@@ -771,7 +791,9 @@ Add `show`, `feed`, and `discover` actions after `index`:
   def discover
     @photos = @user.discover
   end
-  # ...
+
+  def follows
+    # ...
 ```
 {: filename="app/controllers/users_controller.rb" }
 
@@ -781,7 +803,7 @@ These actions leverage the `has_many :through` associations we built in the prev
 
 Add the remaining three actions after `discover`:
 
-```ruby{4-14}
+```ruby{5-15}
   def discover
     @photos = @user.discover
   end
@@ -829,7 +851,7 @@ Open `app/controllers/photos_controller.rb`. The scaffold generated a standard C
 
 **1. Auto-assign the owner in `create`:**
 
-```ruby{3}
+```ruby{4}
   # ...
   def create
     @photo = Photo.new(photo_params)
@@ -872,7 +894,7 @@ Open `app/controllers/comments_controller.rb`. We need to make a few changes fro
 
 **1. Auto-assign the author:**
 
-```ruby{3}
+```ruby{4}
   # ...
   def create
     @comment = Comment.new(comment_params)
@@ -889,7 +911,7 @@ Same pattern as photos: we set the author from `current_user` rather than trusti
 
 Change the `create` action's redirect to go back to the previous page:
 
-```ruby{3}
+```ruby{2}
       if @comment.save
         format.html { redirect_back fallback_location: root_path, notice: "Comment was successfully created." }
         # ...
@@ -911,7 +933,7 @@ Comments are created and deleted inline on the feed/photo pages, so we want to r
 
 **3. Redirect to root after update:**
 
-```ruby{3}
+```ruby{2}
       if @comment.update(comment_params)
         format.html { redirect_to root_url, notice: "Comment was successfully updated." }
         # ...
@@ -938,7 +960,7 @@ The `index` action now expects a `photo_id` parameter (from the nested route `/p
 
 **2. Auto-assign the fan:**
 
-```ruby{3}
+```ruby{4}
   # ...
   def create
     @like = Like.new(like_params)
@@ -953,7 +975,7 @@ Same pattern: the current user is automatically set as the fan.
 
 **3. Redirect back to the photo after create and destroy:**
 
-```ruby{3}
+```ruby{2}
       if @like.save
         format.html { redirect_back fallback_location: @like.photo, notice: "Like was successfully created." }
         # ...
@@ -979,7 +1001,7 @@ Open `app/controllers/follow_requests_controller.rb`. We need to make a few chan
 
 **1. Auto-assign the sender and auto-accept for public accounts:**
 
-```ruby{3-5}
+```ruby{4-7}
   # ...
   def create
     @follow_request = FollowRequest.new(follow_request_params)
@@ -999,7 +1021,7 @@ This is the most interesting controller logic. First, we set the `sender` to `cu
 
 Change all three actions to use `redirect_back`:
 
-```ruby{3}
+```ruby{2}
       if @follow_request.save
         format.html { redirect_back fallback_location: root_url, notice: "Follow request was successfully created." }
         # ...
