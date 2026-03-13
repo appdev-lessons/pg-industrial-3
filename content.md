@@ -491,12 +491,13 @@ Right at the top of the `<body>`, add a [Bootstrap modal](https://getbootstrap.c
       </div>
     <% end %>
 
-    <% if notice.present? || alert.present? %>
-      <!-- ... -->
+    <%= yield %>
+  </body>
+</html>
 ```
 {: filename="app/views/layouts/application.html.erb" }
 
-This overlay dialog is included on _every_ page so that users can add a photo from anywhere in the app. The `current_user.own_photos.build` creates a new, unsaved Photo object associated with the current user, which the form partial uses to generate the correct form fields.
+This overlay dialog is included on _every_ page so that users (who are signed in: `if current_user.present?`) can add a photo from anywhere in the app. The `current_user.own_photos.build` creates a new, unsaved Photo object associated with the current user, which the form partial uses to generate the correct form fields.
 
 The modal is triggered by buttons with `data-bs-toggle="modal"` and `data-bs-target="#new_photo"`. You'll see those buttons in the left sidebar and the floating action button.
 
