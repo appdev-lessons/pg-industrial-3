@@ -405,7 +405,7 @@ git commit -m "Updated photo form partial with Bootstrap styling and file upload
 git push
 ```
 
-[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/e68e4f24fe9c335d48d1bb83bef458ba172f988f)
 
 ## The application layout
 
