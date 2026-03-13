@@ -227,8 +227,8 @@ We're loading three things:
 2. **Bootstrap JS**: interactive components like modals, dropdowns, and dismissable alerts
 3. **Font Awesome**: icons throughout the interface (hearts, houses, magnifying glasses, etc.)
 
-<aside markdown="1">
-Why use a CDN instead of bundling these assets locally? CDNs are fast. They're distributed globally, and your users' browsers may already have the files cached from visiting other sites that use the same CDN. For a project like this, CDN links are simple and effective.
+<aside>
+Why use a CDN instead of bundling these assets locally? We've chosen to use CDNs for now since they are quick and easy to understand. Later we'll discuss asset bundling to enhance performance for our end users.
 </aside>
 
 ## Flash messages partial
@@ -647,7 +647,7 @@ The right sidebar has two elements:
 
 This navigation bar only appears on extra-small screens (`d-block d-sm-none`). It uses `fixed-bottom` to stick to the bottom of the screen, just like Instagram's mobile app. It provides quick access to Feed, Discover, Profile, and Settings.
 
-<aside markdown="1">
+<aside>
 Notice how we use Bootstrap's responsive display utilities (`d-none`, `d-md-block`, `d-sm-none`, etc.) throughout the layout to show and hide elements at different screen sizes. This is much easier than writing custom media queries. The sidebars and bottom nav work together to provide navigation on every screen size.
 </aside>
 
@@ -742,7 +742,7 @@ The `set_user_search` method creates a Ransack search object `@q` and stores it 
 
 When someone submits the search form, the params will include something like `q[username_cont]=ali`. Ransack parses this and generates a query like `WHERE username ILIKE '%ali%'`. The `_cont` suffix is a Ransack predicate meaning "contains."
 
-<aside markdown="1">
+<aside>
 Remember that we whitelisted `username` as a searchable attribute in the previous lesson with `ransackable_attributes`. Without that whitelist, Ransack would refuse to search at all. It's a security measure to prevent people from searching sensitive fields like `email` or `encrypted_password`.
 </aside>
 
@@ -868,7 +868,7 @@ end
 
 These are straightforward. Each action uses an association we defined on the User model. `leaders` gives us the people `@user` follows, `followers` gives us the people who follow `@user`, and `pending_received_follow_requests` gives us follow requests that `@user` hasn't responded to yet.
 
-<aside markdown="1">
+<aside>
 Notice that we don't have a `before_action :set_user` on the `index` action. That's intentional. The search results page doesn't operate on a single user.
 </aside>
 
