@@ -428,7 +428,7 @@ Let's break down the layout piece by piece.
 
 The `<head>` section sets up the page title, viewport, icons, and loads our assets:
 
-```erb{4,11}
+```erb{4-5,11}
 <!DOCTYPE html>
 <html>
   <head>
