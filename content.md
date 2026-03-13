@@ -73,7 +73,7 @@ Rails.application.routes.draw do
     resources :likes, only: [:index]
   end
 
-  resources :users, only: [ :index ]
+  resources :users, only: [:index]
 
   get ":username" => "users#show", as: :user
   get ":username/feed" => "users#feed", as: :feed
@@ -127,7 +127,7 @@ You might be wondering: we already have `resources :comments` and `resources :li
 ### Users index
 
 ```ruby
-resources :users, only: [ :index ]
+resources :users, only: [:index]
 ```
 
 This gives us a `/users` route that we'll use for search results. We're restricting it to `only: [:index]` because Devise handles the other user-related routes (sign up, sign in, edit profile).
