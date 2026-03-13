@@ -455,6 +455,18 @@ We render our CDN assets partial here in the `<head>`, along with the applicatio
 
 After you add that CDN assets partial, refresh your live app preview at `"/photos/new"`. Pulling in the Bootstrap CDN should have updated the styling.
 
+Also note the browser tab title says "New photo" instead of "Photogram (Industrial)." That's where the `content_for` is coming into play! The scaffold place this line in the top of the new photo view template:
+
+```erb{1}
+<% content_for :title, "New photo" %>
+
+<h1>New photo</h1>
+<!-- ... -->
+```
+{: filename="app/views/photos/new.html.erb" }
+
+You'll notice these `content_for` calls scattered throughout the view templates by the scaffold generator. These are used to update the page title shown in the browser tab dynamically as you navigate the app.
+
 ### The "New Photo" modal
 
 Right at the top of the `<body>`, add a [Bootstrap modal](https://getbootstrap.com/docs/5.3/components/modal/) for creating new photos:
