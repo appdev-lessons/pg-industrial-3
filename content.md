@@ -330,7 +330,16 @@ First, replace the opening `form_with` tag and add an error display block:
 
 The `form_with(model: photo, class: "card-body")` uses the `photo` local variable, which means it works for both new and existing photos. Rails automatically determines the correct URL and HTTP method.
 
-Next, add the image upload field after the error block:
+Next, replace the current image text field: 
+
+```erb
+  <div>
+    <%= form.label :image, style: "display: block" %>
+    <%= form.text_field :image %>
+  </div>
+```
+
+with an actual image upload field after the error block:
 
 ```erb{6-12}
   <!-- ... -->
@@ -346,7 +355,10 @@ Next, add the image upload field after the error block:
     <%= form.file_field :image, class: "form-control", accept: "image/*" %>
   </div>
 
-  <div class="form-group my-1">
+  <div>
+    <%= form.label :caption, style: "display: block" %>
+    <%= form.textarea :caption %>
+  </div>
     <!-- ... -->
 ```
 {: filename="app/views/photos/_form.html.erb" }
