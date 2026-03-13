@@ -28,6 +28,8 @@ Now create a new branch from there:
 git checkout -b routes-layout-controllers
 ```
 
+If you need a reference while you work, you can visit [my pull request](#my-pull-request){: target="_self" } below. Individual commits are also linked throughout the lesson for convenience.
+
 ## Setting up routes
 
 The scaffold generators from the previous lessons already added some routes for us, and Devise added `devise_for :users`. But our application needs more than basic CRUD routes. We need vanity URL routes like `/:username` for user profiles, nested routes for viewing a photo's comments and likes, and dedicated pages for feed, discover, followers, and more.
@@ -163,7 +165,7 @@ It should _not_ contain `appdev-projects` in the URL. If it does, you submitted 
 You don't need to merge your branches now, but when you're ready: [see the notes in our Git CLI lesson](/lessons/196-git-cli#merging-branches).
 </aside>
 
-Any additional commits you push to this branch will automatically show up on the pull request. As you work through the rest of this lesson, you can periodically check the PR diff on GitHub in the "Changes" tab to get a comprehensive overview of everything that has changed so far.
+Any additional commits you push to this branch will automatically show up on the pull request. As you work through the rest of this lesson, you can periodically check the PR diff on GitHub in the "Files changed" tab to get a comprehensive overview of everything that has changed so far.
 
 Submit your pull request URL:
 
@@ -1081,6 +1083,10 @@ git push
 [See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
 
 In the next lesson, we'll build out all of the view templates: the feed, discover page, user profiles, photo detail pages, and more.
+
+## My pull request
+
+You can visit the full diff of changes on my [pull request](https://github.com/bpurinton/pg-industrial/pull/3) in the [Files changed tab](https://github.com/bpurinton/pg-industrial/pull/3/files) if you need to compare your work to a working solution.
 
 ---
 
