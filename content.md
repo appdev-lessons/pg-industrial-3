@@ -245,7 +245,7 @@ Create `app/views/shared/_flash.html.erb`:
 ```
 {: filename="app/views/shared/_flash.html.erb" }
 
-This partial expects two local variables: `message` (the text to display) and `css_class` (either `"success"` for green or `"danger"` for red). The `alert-dismissible` class and close button let users dismiss the message. We'll render this partial from the layout like:
+This partial expects two local variables: `message` (the text to display) and `css_class` (either `"success"` for green or `"danger"` for red). The [`alert-dismissible`](https://getbootstrap.com/docs/5.3/components/alerts/#dismissing) class and close button let users dismiss the message. We'll render this partial from the layout like:
 
 ```erb
 <%= render "shared/flash", message: notice, css_class: "success" %>
@@ -278,7 +278,7 @@ Create `app/views/shared/_navbar.html.erb`:
 ```
 {: filename="app/views/shared/_navbar.html.erb" }
 
-The key Bootstrap classes here are `d-sm-none d-block`. This means: "display block by default, but hide on small screens and up." In practice, this navbar only appears on extra-small screens (phones). On tablets and desktops, the sidebar navigation takes over.
+The key Bootstrap classes here are [`d-sm-none d-block`](https://getbootstrap.com/docs/5.3/utilities/display/). This means: "display block by default, but hide on small screens and up." In practice, this navbar only appears on extra-small screens (phones). On tablets and desktops, the sidebar navigation takes over.
 
 When the user is signed in, the navbar shows an "Add photo" link. When not signed in, it shows sign in and sign up links instead.
 
@@ -294,7 +294,7 @@ git push
 
 ## Updating the photo form partial
 
-The scaffold generated a `_form.html.erb` partial for photos, but it needs updating to work well in our layout, particularly inside the Bootstrap modal we're about to build. We need a file upload field for the image, a text area for the caption, and proper Bootstrap styling.
+The scaffold generated a `_form.html.erb` partial for photos, but it needs updating to work well in our layout, particularly inside the Bootstrap modal we're about to build. We need a file upload field for the image, a text area for the caption, and proper [Bootstrap form styling](https://getbootstrap.com/docs/5.3/forms/overview/).
 
 Open `app/views/photos/_form.html.erb` and replace its contents with:
 
@@ -601,7 +601,7 @@ Flash messages are centered on the page using Bootstrap's grid offset. We only r
 
 ### The three-column layout
 
-The main content area uses Bootstrap's grid system:
+The main content area uses [Bootstrap's grid system](https://getbootstrap.com/docs/5.3/layout/grid/):
 
 ```erb
 <div class="container mt-5">
@@ -627,7 +627,7 @@ The `<%= yield %>` in the center column is where the content from each page's vi
 
 The left sidebar contains a vertical navigation menu wrapped in `sticky-top`, which keeps it visible as the user scrolls. Key elements:
 
-- **User dropdown**: Shows the current user's avatar, display name, and username. Clicking it reveals a dropdown with "Go to profile" and "Sign out" options. The `button_to` for sign out uses `method: :delete` because Devise expects a DELETE request.
+- **User dropdown**: Shows the current user's avatar, display name, and username. Clicking it reveals a [Bootstrap dropdown](https://getbootstrap.com/docs/5.3/components/dropdowns/) with "Go to profile" and "Sign out" options. The `button_to` for sign out uses `method: :delete` because Devise expects a DELETE request.
 - **Navigation links**: Feed, Discover, Add photo, Profile, and Settings. Each uses a Font Awesome icon and a text label. The text labels use `d-xl-inline d-none` to only appear on extra-large screens. On medium and large screens, only the icons show, keeping the sidebar compact.
 - **Add photo button**: Uses `button_tag` with Bootstrap modal data attributes instead of a link, since it opens the modal overlay rather than navigating to a new page.
 
@@ -645,10 +645,10 @@ The right sidebar has two elements:
 <nav class="navbar fixed-bottom bg-body-tertiary d-block d-sm-none">
 ```
 
-This navigation bar only appears on extra-small screens (`d-block d-sm-none`). It uses `fixed-bottom` to stick to the bottom of the screen, just like Instagram's mobile app. It provides quick access to Feed, Discover, Profile, and Settings.
+This [navbar](https://getbootstrap.com/docs/5.3/components/navbar/) only appears on extra-small screens (`d-block d-sm-none`). It uses `fixed-bottom` to stick to the bottom of the screen, just like Instagram's mobile app. It provides quick access to Feed, Discover, Profile, and Settings.
 
 <aside>
-Notice how we use Bootstrap's responsive display utilities (`d-none`, `d-md-block`, `d-sm-none`, etc.) throughout the layout to show and hide elements at different screen sizes. This is much easier than writing custom media queries. The sidebars and bottom nav work together to provide navigation on every screen size.
+Notice how we use Bootstrap's [responsive display utilities](https://getbootstrap.com/docs/5.3/utilities/display/) (`d-none`, `d-md-block`, `d-sm-none`, etc.) throughout the layout to show and hide elements at different screen sizes. This is much easier than writing custom media queries. The sidebars and bottom nav work together to provide navigation on every screen size.
 </aside>
 
 Now would be a good time for a commit:
