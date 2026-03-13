@@ -428,15 +428,13 @@ Let's break down the layout piece by piece.
 
 The `<head>` section sets up the page title, viewport, icons, and loads our assets:
 
-```erb{4-5,11}
+```erb{4-5,9}
 <!DOCTYPE html>
 <html>
   <head>
     <title><%= content_for(:title) || "Photogram (Industrial)" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    
     <!-- ... -->
-
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%= render "shared/cdn_assets" %>
