@@ -469,7 +469,7 @@ You'll notice these `content_for` calls scattered throughout the view templates 
 
 Right at the top of the `<body>`, add a [Bootstrap modal](https://getbootstrap.com/docs/5.3/components/modal/) for creating new photos:
 
-```erb{12}
+```erb{3-20}
   <!-- ... -->
   <body>
     <% if current_user.present? %>
