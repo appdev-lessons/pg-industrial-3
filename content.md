@@ -420,7 +420,7 @@ Test this out in [the target](https://pg-industrial.matchthetarget.com) by loggi
 
 There's also a Bootstrap modal for adding photos that's available on every page when signed in.
 
-Open `app/views/layouts/application.html.erb` and replace the entire file. This is the largest single file change in the lesson, so rather than show all ~190 lines here, we'll walk through it section by section below. You can copy the complete file from [the commit for this step](#layout-commit).
+Open `app/views/layouts/application.html.erb` so we can walk through it section by section below. If you get stuck, you can visit my commit at the end to copy the exact changes (there are _a lot_).
 
 Let's break down the layout piece by piece.
 
@@ -428,30 +428,32 @@ Let's break down the layout piece by piece.
 
 The `<head>` section sets up the page title, viewport, icons, and loads our assets:
 
-```erb{3,13-15}
+```erb{4,11}
+<!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Target: Photogram (Industrial)" %></title>
+    <title><%= content_for(:title) || "Photogram (Industrial)" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-    <%= yield :head %>
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    
+    <!-- ... -->
+
     <link rel="apple-touch-icon" href="/icon.png">
+
     <%= render "shared/cdn_assets" %>
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <!-- ... -->
+<!-- ... -->
 ```
 {: filename="app/views/layouts/application.html.erb" }
 
 The `content_for(:title)` allows individual pages to set a custom title. If none is set, it falls back to the default. The viewport meta tag is essential for responsive design. Without it, mobile browsers would render the page as if it were a desktop screen and then zoom out.
 
 We render our CDN assets partial here in the `<head>`, along with the application stylesheet and JavaScript imports.
+
+After you add that CDN assets partial, refresh your live app preview at `"/photos/new"`. Pulling in the Bootstrap CDN should have updated the styling.
 
 ### The "New Photo" modal
 
