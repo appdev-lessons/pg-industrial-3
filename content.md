@@ -1046,6 +1046,24 @@ git push
 
 In the next lesson, we'll build out all of the view templates: the feed, discover page, user profiles, photo detail pages, and more.
 
+## Open and submit your pull request
+
+Open a pull request on GitHub for the `routes-layout-controllers` branch. The **base** branch should be `models-and-associations` (the branch from the previous lesson).
+
+<div class="alert alert-info">
+
+Need a refresher on opening a PR? [Watch this short video demonstration.](https://share.descript.com/view/RLP4apAu5pp) And when you're ready to merge: [see the notes in our Git CLI lesson](https://learn.firstdraft.com/lessons/196-git-cli#merging-branches).
+</div>
+
+Submit your pull request URL:
+
+- `routes-layout-controllers` compared to `models-and-associations`:
+- github.com
+  - Great job!
+- any
+  - Not quite. Make sure the URL looks like: `github.com/[YOUR_GITHUB_USERNAME]/pg-industrial/pull/X`
+{: .free_text #pr_url title="Pull request URL" points="1" answer="1" }
+
 ---
 
 - Approximately how long (in minutes) did this lesson take you to complete?
