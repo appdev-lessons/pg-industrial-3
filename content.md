@@ -166,7 +166,7 @@ git push --set-upstream origin routes-layout-controllers
 
 That last command publishes the branch to GitHub. From now on, you can push with just `git push` after each commit.
 
-[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/c9578bc039678c65c0783cbdd45778653642dc2c)
 
 ### Open and submit your pull request
 
