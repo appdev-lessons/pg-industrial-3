@@ -290,7 +290,7 @@ git commit -m "Created shared partials for CDN assets, flash messages, and navba
 git push
 ```
 
-[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
+[See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/237c9b9bccc2d9a479d9d76c4ce915a2f60510f5)
 
 ## Updating the photo form partial
 
