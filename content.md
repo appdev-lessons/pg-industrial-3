@@ -116,6 +116,7 @@ Specifically, the two nested lines above generate:
 |---|---|---|---|
 | GET | `/photos/:photo_id/comments` | `comments#index` | `photo_comments_path(photo)` |
 | GET | `/photos/:photo_id/likes` | `likes#index` | `photo_likes_path(photo)` |
+{: .bleed-full }
 
 (You can run the command `rails routes` at the terminal to find those two new routes.)
 
