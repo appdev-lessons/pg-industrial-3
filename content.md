@@ -134,6 +134,8 @@ This gives us a `/users` route that we'll use for search results. We're restrict
 
 ### Vanity URL routes
 
+Instead of `/users/42`, we use `/alice`, a vanity URL with the username right in the path:
+
 ```ruby
 get ":username" => "users#show", as: :user
 get ":username/feed" => "users#feed", as: :feed
@@ -143,7 +145,9 @@ get ":username/pending" => "users#pending", as: :pending
 get ":username/discover" => "users#discover", as: :discover
 ```
 
-These are the most interesting routes. Instead of `/users/42`, we use `/alice`, a vanity URL with the username right in the path. Each route captures the `:username` segment from the URL and passes it to the appropriate controller action.
+Each route captures the `:username` segment from the URL and passes it to the appropriate controller action.
+
+We don't have a `UsersController` with the index, show, feed, etc. actions yet, nor the corresponding view templates. We'll make all of those later to handle these routes we've set up.
 
 <div class="alert alert-danger">
 
