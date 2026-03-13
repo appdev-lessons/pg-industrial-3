@@ -30,6 +30,12 @@ git checkout -b routes-layout-controllers
 
 If you need a reference while you work, you can visit [my pull request](#my-pull-request){: target="_self" } below. Individual commits are also linked throughout the lesson for convenience.
 
+<div class="alert alert-info">
+Are you still navigating manually through the file tree and clicking to open everything? That's going to become very painful, very quickly. One of the biggest things you can do to increase your productivity is navigating your codebase and its dozens of files without your mouse.
+
+Stop now and experiment with [jumping to files](/lessons/194-helper-methods-part-3#partials-shine-along-with-jump-to-file) in the VSCode fuzzy search bar.
+</div>
+
 ## Setting up routes
 
 The scaffold generators from the previous lessons already added some routes for us, and Devise added `devise_for :users`. But our application needs more than basic CRUD routes. We need vanity URL routes like `/:username` for user profiles, nested routes for viewing a photo's comments and likes, and dedicated pages for feed, discover, followers, and more.
