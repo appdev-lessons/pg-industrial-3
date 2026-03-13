@@ -108,7 +108,20 @@ resources :photos do
 end
 ```
 
-This creates [nested routes](https://guides.rubyonrails.org/routing.html#nested-resources): `/photos/1/comments` and `/photos/1/likes`. These are useful for viewing all comments or likes on a specific photo. The `only: [:index]` restricts the nested routes to just the `index` action, since we don't need nested `new`, `create`, etc. because comments and likes are created through the standalone routes above.
+This creates [nested routes](https://guides.rubyonrails.org/routing.html#nested-resources). Think about what happens when a user clicks "View all comments" on a photo. We need a URL that identifies _which_ photo's comments to show. That's exactly what nested routes give us: URLs like `/photos/42/comments` and `/photos/42/likes`, where the photo's ID is baked right into the path.
+
+Specifically, the two nested lines above generate:
+
+| HTTP verb | Path | Controller#Action | Named helper |
+|---|---|---|---|
+| GET | `/photos/:photo_id/comments` | `comments#index` | `photo_comments_path(photo)` |
+| GET | `/photos/:photo_id/likes` | `likes#index` | `photo_likes_path(photo)` |
+
+(You can run the command `rails routes` at the terminal to find those two new routes.)
+
+Notice the `:photo_id` segment in each path. When a request comes in to `/photos/42/comments`, Rails sets `params[:photo_id]` to `42`. In the controller, we'll use that to scope our query (something like `Photo.find(params[:photo_id]).comments`) so we only fetch comments belonging to that specific photo.
+
+You might be wondering: we already have `resources :comments` and `resources :likes` as standalone routes earlier in the file. Why do we need nested versions too? The standalone routes handle creating, editing, and deleting an individual comment or like, where the comment's own ID is enough. The nested routes serve a different purpose: _listing_ all comments (or likes) that belong to a specific photo. That's why we use `only: [:index]` to restrict the nested routes to just the `index` action, since the standalone routes already cover everything else.
 
 ### Users index
 
