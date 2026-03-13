@@ -296,9 +296,11 @@ git push
 
 The scaffold generated a `_form.html.erb` partial for photos, but it needs updating to work well in our layout, particularly inside the Bootstrap modal we're about to build. We need a file upload field for the image, a text area for the caption, and proper [Bootstrap form styling](https://getbootstrap.com/docs/5.3/forms/overview/).
 
-Open `app/views/photos/_form.html.erb` and replace its contents with:
+Open `app/views/photos/_form.html.erb`. The scaffold generated a basic form, but we need to replace its contents piece by piece.
 
-```erb
+First, replace the opening `form_with` tag and add an error display block:
+
+```erb{1,2-12}
 <%= form_with(model: photo, class: "card-body") do |form| %>
   <% if photo.errors.any? %>
     <div id="error_explanation">
@@ -313,6 +315,17 @@ Open `app/views/photos/_form.html.erb` and replace its contents with:
       </ul>
     </div>
   <% end %>
+  <!-- ... -->
+<% end %>
+```
+{: filename="app/views/photos/_form.html.erb" }
+
+The `form_with(model: photo, class: "card-body")` uses the `photo` local variable, which means it works for both new and existing photos. Rails automatically determines the correct URL and HTTP method.
+
+Next, add the image upload field after the error block:
+
+```erb{3-7}
+  <% end %>
 
   <div class="form-group">
     <%= form.label :image, class: "visually-hidden" %>
@@ -320,6 +333,16 @@ Open `app/views/photos/_form.html.erb` and replace its contents with:
       <%= image_tag photo.image, class: "img-cover w-100 mb-2" %>
     <% end %>
     <%= form.file_field :image, class: "form-control", accept: "image/*" %>
+  </div>
+  <!-- ... -->
+```
+{: filename="app/views/photos/_form.html.erb" }
+
+The `accept: "image/*"` tells the browser to only show image files in the file picker dialog. The `photo.persisted? && photo.image.attached?` check means that when editing an existing photo, we show the current image above the file field so the user can see what they're replacing.
+
+Finally, add the caption field and submit button:
+
+```erb{3-4,7}
   </div>
 
   <div class="form-group my-1">
@@ -334,12 +357,7 @@ Open `app/views/photos/_form.html.erb` and replace its contents with:
 ```
 {: filename="app/views/photos/_form.html.erb" }
 
-A few things worth noting:
-
-- `form_with(model: photo, class: "card-body")`: the form uses the `photo` local variable, which means it works for both new and existing photos. Rails automatically determines the correct URL and HTTP method.
-- `accept: "image/*"` on the file field: this tells the browser to only show image files in the file picker dialog.
-- `photo.persisted? && photo.image.attached?`: when editing an existing photo, we show the current image above the file field so the user can see what they're replacing.
-- Labels are `visually-hidden`: we use placeholders instead for a cleaner look, but the labels are still present for accessibility (screen readers can read them).
+The labels are `visually-hidden` throughout the form. We use placeholders instead for a cleaner look, but the labels are still present for accessibility (screen readers can read them).
 
 Now would be a good time for a commit:
 
