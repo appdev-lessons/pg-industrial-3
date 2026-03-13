@@ -91,14 +91,24 @@ But, let's walk through some of the unfamiliar key additions.
 
 ### Nested routes
 
+Previously, the photos resource line was:
+
 ```ruby
+resources :photos
+```
+
+which we know from previous lessons gives us the "seven golden" RESTful routes: index, new, create, show, edit, update, and destroy. From just that line we get `"/photos"`, `"/photos/:id"`, etc., and named helper methods like `photos_path` and `photos_url`.
+
+Our edit add a `do` block and _nested_ two resource paths under the photos resource:
+
+```ruby{1:(18-20),2-4}
 resources :photos do
   resources :comments, only: [:index]
   resources :likes, only: [:index]
 end
 ```
 
-This creates nested routes like `/photos/1/comments` and `/photos/1/likes`. These are useful for viewing all comments or likes on a specific photo. The `only: [:index]` restricts the nested routes to just the `index` action, since we don't need nested `new`, `create`, etc. because comments and likes are created through the standalone routes above.
+This creates [nested routes](https://guides.rubyonrails.org/routing.html#nested-resources): `/photos/1/comments` and `/photos/1/likes`. These are useful for viewing all comments or likes on a specific photo. The `only: [:index]` restricts the nested routes to just the `index` action, since we don't need nested `new`, `create`, etc. because comments and likes are created through the standalone routes above.
 
 ### Users index
 
