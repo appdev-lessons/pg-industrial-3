@@ -138,16 +138,32 @@ That last command publishes the branch to GitHub. From now on, you can push with
 
 [See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
 
-### Open a pull request
+### Open and submit your pull request
 
-Now that you've published the branch, go to GitHub and open a pull request. The **base** branch should be `models-and-associations` (the branch from the previous lesson) and the **compare** branch should be `routes-layout-controllers`.
+Now that you've pushed your branch to GitHub, it's time to open a **pull request** (PR). A pull request lets us review your code and leave line-by-line feedback.
 
 <div class="alert alert-info">
 
-Need a refresher on opening a PR? [Watch this short video demonstration.](https://share.descript.com/view/RLP4apAu5pp) And when you're ready to merge: [see the notes in our Git CLI lesson](/lessons/196-git-cli#merging-branches).
+[Here is a short video demonstration of the process.](https://share.descript.com/view/RLP4apAu5pp) You should also carefully read the notes below!
 </div>
 
-Any additional commits you push to this branch will automatically show up on the pull request. As you work through the rest of this lesson, you can periodically check the PR diff on GitHub to get a comprehensive overview of everything that has changed so far.
+On GitHub, navigate to your `pg-industrial` repository. You should see a prompt to open a pull request for the `routes-layout-controllers` branch that you just published, or you can go to the "Pull requests" tab and click "New pull request."
+
+Make sure the **base** branch is `models-and-associations` and the **compare** branch is `routes-layout-controllers`. Also be sure to change the base _repository_ from `appdev-projects/pg-industrial` to _your_ fork. Give it a title, then click "Create pull request."
+
+Your PR URL should look like:
+
+```
+github.com/[YOUR_GITHUB_USERNAME]/pg-industrial/pull/X
+```
+
+It should _not_ contain `appdev-projects` in the URL. If it does, you submitted a PR to _our_ repo instead of to _your own fork_.
+
+<aside>
+You don't need to merge your branches now, but when you're ready: [see the notes in our Git CLI lesson](/lessons/196-git-cli#merging-branches).
+</aside>
+
+Any additional commits you push to this branch will automatically show up on the pull request. As you work through the rest of this lesson, you can periodically check the PR diff on GitHub in the "Changes" tab to get a comprehensive overview of everything that has changed so far.
 
 Submit your pull request URL:
 
