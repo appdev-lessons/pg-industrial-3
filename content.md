@@ -138,6 +138,26 @@ That last command publishes the branch to GitHub. From now on, you can push with
 
 [See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
 
+### Open a pull request
+
+Now that you've published the branch, go to GitHub and open a pull request. The **base** branch should be `models-and-associations` (the branch from the previous lesson) and the **compare** branch should be `routes-layout-controllers`.
+
+<div class="alert alert-info">
+
+Need a refresher on opening a PR? [Watch this short video demonstration.](https://share.descript.com/view/RLP4apAu5pp) And when you're ready to merge: [see the notes in our Git CLI lesson](/lessons/196-git-cli#merging-branches).
+</div>
+
+Any additional commits you push to this branch will automatically show up on the pull request. As you work through the rest of this lesson, you can periodically check the PR diff on GitHub to get a comprehensive overview of everything that has changed so far.
+
+Submit your pull request URL:
+
+- `routes-layout-controllers` compared to `models-and-associations`:
+- github.com
+  - Great job!
+- any
+  - Not quite. Make sure the URL looks like: `github.com/[YOUR_GITHUB_USERNAME]/pg-industrial/pull/X`
+{: .free_text #pr_url title="Pull request URL" points="1" answer="1" }
+
 ## CDN assets partial
 
 Before we build our layout, we need to bring in Bootstrap and Font Awesome. Instead of cluttering the layout file with CDN links, we'll put them in a shared partial.
@@ -1045,24 +1065,6 @@ git push
 [See my commit for this step.](https://github.com/bpurinton/pg-industrial/commit/)
 
 In the next lesson, we'll build out all of the view templates: the feed, discover page, user profiles, photo detail pages, and more.
-
-## Open and submit your pull request
-
-Open a pull request on GitHub for the `routes-layout-controllers` branch. The **base** branch should be `models-and-associations` (the branch from the previous lesson).
-
-<div class="alert alert-info">
-
-Need a refresher on opening a PR? [Watch this short video demonstration.](https://share.descript.com/view/RLP4apAu5pp) And when you're ready to merge: [see the notes in our Git CLI lesson](https://learn.firstdraft.com/lessons/196-git-cli#merging-branches).
-</div>
-
-Submit your pull request URL:
-
-- `routes-layout-controllers` compared to `models-and-associations`:
-- github.com
-  - Great job!
-- any
-  - Not quite. Make sure the URL looks like: `github.com/[YOUR_GITHUB_USERNAME]/pg-industrial/pull/X`
-{: .free_text #pr_url title="Pull request URL" points="1" answer="1" }
 
 ---
 
