@@ -416,6 +416,8 @@ Now for the big one. The application layout is the HTML skeleton that wraps ever
 - **Right sidebar**: Search bar and a floating "Add photo" button (visible on medium screens and up)
 - **Mobile bottom nav**: A fixed-bottom navigation bar (visible only on small screens)
 
+Test this out in [the target](https://pg-industrial.matchthetarget.com) by logging in and then increasing and decreasing your browser screen width. Note how things appear, disappear, and move around. At the narrowest, you should see the navigation buttons appears on the bottom of the screen, just like a native mobile app's menu bar! Cool!
+
 There's also a Bootstrap modal for adding photos that's available on every page when signed in.
 
 Open `app/views/layouts/application.html.erb` and replace the entire file. This is the largest single file change in the lesson, so rather than show all ~190 lines here, we'll walk through it section by section below. You can copy the complete file from [the commit for this step](#layout-commit).
