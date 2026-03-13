@@ -374,7 +374,9 @@ with an actual image upload field after the error block:
 
 The `accept: "image/*"` tells the browser to only show image files in the file picker dialog. The `photo.persisted? && photo.image.attached?` check means that when editing an existing photo, we show the current image above the file field so the user can see what they're replacing.
 
-Finally, add the caption field and submit button:
+Finally, replace the remaining inputs with just this caption field and submit button:
+
+(We're removing the owner ID, comments count, likes count, and pinned fields: these are not things a user should need to fill out in our final target when they create a new photo.)
 
 ```erb{5-12}
   <!-- ... -->
