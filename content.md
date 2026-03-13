@@ -302,6 +302,15 @@ git push
 
 ## Updating the photo form partial
 
+<div class="alert alert-info">
+
+While you work on this section, you can navigate your `bin/server` live app preview to `"/photos/new"` to view and test the results of each change.
+
+Now that we're doing frontend work, consider that for all of the steps going forward. It might not look pretty, but the routes are all set up for you to start visiting and examining the rendered views.
+
+If things are broken, it's likely we'll fix them later in the lesson, so try and adhere to the written content as you work.
+</div>
+
 The scaffold generated a `_form.html.erb` partial for photos, but it needs updating to work well in our layout, particularly inside the Bootstrap modal we're about to build. We need a file upload field for the image, a text area for the caption, and proper [Bootstrap form styling](https://getbootstrap.com/docs/5.3/forms/overview/).
 
 Open `app/views/photos/_form.html.erb`. The scaffold generated a basic form, but we need to replace its contents piece by piece.
