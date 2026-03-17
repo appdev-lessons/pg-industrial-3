@@ -866,6 +866,17 @@ Create `app/views/shared/_photo_modal.html.erb`:
 ```
 {: filename="app/views/shared/_photo_modal.html.erb" copyable }
 
+Let's zoom in on the `build` part of the render line:
+
+```erb{1:(34-62)}
+<%= render "photos/form", photo: current_user.own_photos.build %>
+```
+
+- `current_user.own_photos`: this uses the `has_many :own_photos` association on `User` to scope us down to only the photos that belong to the currently signed in user.
+- `.build`: this is an ActiveRecord method that creates a **new `Photo` object in memory** (like `Photo.new`), but with a bonus: it automatically sets the `owner_id` foreign key to `current_user.id` for us, because we called it through the association.
+
+The result is an unsaved `Photo` instance with `owner_id` already set, ready to be wrapped in a form and submitted. Think of `.build` as saying _"prepare a new photo **for this owner**"_ without saving it to the database yet.
+
 Now render this partial in the layout, right after the opening `<body>` tag, before the flash messages:
 
 ```erb{3}
