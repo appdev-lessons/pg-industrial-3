@@ -1,4 +1,4 @@
-# Photogram Industrial: Routes, layout, and controllers
+# Photogram Industrial, Part 3: Routes, layout, and controllers
 
 ## Getting started
 
