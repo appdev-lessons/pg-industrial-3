@@ -189,6 +189,11 @@ On GitHub, navigate to your `pg-industrial` repository. You should see a prompt 
 
 Make sure the **base** branch is `models-and-associations` and the **compare** branch is `routes-layout-controllers`. Also be sure to change the base _repository_ from `appdev-projects/pg-industrial` to _your_ fork. Give it a title, then click "Create pull request."
 
+<aside>
+
+If there's no base _repository_ dropdown when you open your pull request, skip that step. Projects launched from the Grades page now save your work to your own repository rather than a fork, so your pull request already targets your repository.
+</aside>
+
 Your PR URL should look like:
 
 ```
