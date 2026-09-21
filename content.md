@@ -35,7 +35,7 @@ If you need a reference while you work, you can visit [my pull request](#my-pull
 The scaffold generators from the previous lessons already added some routes for us, and Devise added `devise_for :users`. But our application needs more than basic CRUD routes. We need vanity URL routes like `/:username` for user profiles, nested routes for viewing a photo's comments and likes, and dedicated pages for feed, discover, followers, and more.
 
 <div class="alert alert-info">
-This is the last time we'll remind you:
+<i class="fa-solid fa-circle-info"></i> This is the last time we'll remind you:
 
 Are you still navigating manually through the file tree and clicking to open everything? That's going to become very painful, very quickly. One of the biggest things you can do to increase your productivity is navigating your codebase and its dozens of files without your mouse.
 
@@ -157,9 +157,9 @@ Each route captures the `:username` segment from the URL and passes it to the ap
 
 We don't have a `UsersController` with the index, show, feed, etc. actions yet, nor the corresponding view templates. We'll make all of those later to handle these routes we've set up.
 
-<div class="alert alert-danger">
+<div class="alert alert-warning">
 
-These vanity routes **must** come at the very end of the routes file. Because `:username` matches _any_ string, if these routes were listed first, a request to `/photos` would try to find a user with the username "photos" instead of hitting the photos resource. Rails processes routes top-to-bottom and stops at the first match, so more specific routes must come before these catch-all patterns.
+<i class="fa-solid fa-triangle-exclamation"></i> These vanity routes **must** come at the very end of the routes file. Because `:username` matches _any_ string, if these routes were listed first, a request to `/photos` would try to find a user with the username "photos" instead of hitting the photos resource. Rails processes routes top-to-bottom and stops at the first match, so more specific routes must come before these catch-all patterns.
 </div>
 
 The `as:` option on each route creates named path helpers. For example, `as: :user` gives us `user_path("alice")` which generates `/alice`, and `as: :feed` gives us `feed_path("alice")` which generates `/alice/feed`. We'll use these helpers extensively in our views.
@@ -180,9 +180,9 @@ That last command publishes the branch to GitHub. From now on, you can push with
 
 Now that you've pushed your branch to GitHub, it's time to open a **pull request** (PR). A pull request lets us review your code and leave line-by-line feedback.
 
-<div class="alert alert-info">
+<div class="alert alert-primary">
 
-[Here is a short video demonstration of the process.](https://share.descript.com/view/RLP4apAu5pp) You should also carefully read the notes below!
+<i class="fa-solid fa-circle-play"></i> [Here is a short video demonstration of the process.](https://share.descript.com/view/RLP4apAu5pp) You should also carefully read the notes below!
 </div>
 
 On GitHub, navigate to your `pg-industrial` repository. You should see a prompt to open a pull request for the `routes-layout-controllers` branch that you just published, or you can go to the "Pull requests" tab and click "New pull request."
@@ -256,7 +256,7 @@ And create a minimal view template at `app/views/users/feed.html.erb`:
 
 <div class="alert alert-success">
 
-**CHECK**: Start your server with `bin/server` and visit `/`. You should be redirected to the sign-in page. Sign in with `alice@example.com` / `appdev`. You should see the stub feed page with "Feed" and "Coming soon!" The root route works!
+<i class="fa-solid fa-circle-check"></i> Start your server with `bin/server` and visit `/`. You should be redirected to the sign-in page. Sign in with `alice@example.com` / `appdev`. You should see the stub feed page with "Feed" and "Coming soon!" The root route works!
 </div>
 
 Now would be a good time for a commit:
@@ -324,7 +324,7 @@ The `content_for(:title)` allows individual pages to set a custom title (you'll 
 
 <div class="alert alert-success">
 
-**CHECK**: Refresh your live app preview. The page should now have Bootstrap styling: the font changes and the form inputs look cleaner.
+<i class="fa-solid fa-circle-check"></i> Refresh your live app preview. The page should now have Bootstrap styling: the font changes and the form inputs look cleaner.
 </div>
 
 ## Flash messages partial
@@ -373,7 +373,7 @@ We only render this section if there's actually a flash message to show.
 
 <div class="alert alert-success">
 
-**CHECK**: Since we haven't built a sign out link yet, you can run `rake sample_data` to reset your database and sign out. Then sign back in your live app preview. You should see a styled green alert that says "Signed in successfully." with a dismiss button (×). Click the × to dismiss it.
+<i class="fa-solid fa-circle-check"></i> Since we haven't built a sign out link yet, you can run `rake sample_data` to reset your database and sign out. Then sign back in your live app preview. You should see a styled green alert that says "Signed in successfully." with a dismiss button (×). Click the × to dismiss it.
 </div>
 
 Now would be a good time for a commit:
@@ -476,7 +476,7 @@ The labels are `visually-hidden` throughout the form. We use placeholders instea
 
 <div class="alert alert-success">
 
-**CHECK**: Visit `/photos/new`. You should see a clean form with just an image upload field and a caption text area. No more Owner ID, Comments count, etc.
+<i class="fa-solid fa-circle-check"></i> Visit `/photos/new`. You should see a clean form with just an image upload field and a caption text area. No more Owner ID, Comments count, etc.
 </div>
 
 ## Customizing scaffold controllers
@@ -535,7 +535,7 @@ We permit `:image`, `:pinned`, and `:caption`. Notice that `:owner_id` is _not_ 
 
 <div class="alert alert-success">
 
-**CHECK**: Visit `/photos/new`. Upload an image and type a caption, then click "Create Photo." The photo should be created successfully with the owner automatically assigned.
+<i class="fa-solid fa-circle-check"></i> Visit `/photos/new`. Upload an image and type a caption, then click "Create Photo." The photo should be created successfully with the owner automatically assigned.
 </div>
 
 Now that we've seen the pattern, let's make these updates to our other controllers now.
@@ -752,7 +752,7 @@ The `<%= yield %>` in the center column is where the content from each page's vi
 
 <div class="alert alert-success">
 
-**CHECK**: Visit any page in your live app preview. The page content should now be centered in a middle column with space on each side. Try resizing your browser. The sidebars disappear on narrow screens.
+<i class="fa-solid fa-circle-check"></i> Visit any page in your live app preview. The page content should now be centered in a middle column with space on each side. Try resizing your browser. The sidebars disappear on narrow screens.
 </div>
 
 ## Left sidebar navigation
@@ -838,7 +838,7 @@ Key elements:
 
 <div class="alert alert-success">
 
-**CHECK**: Refresh your live app preview. You should see navigation links in the left sidebar. Click "Settings" → it goes to the Devise edit page. Click your username in the sidebar → see "Go to profile" and "Sign out" options. Click "Sign out" and verify it works!
+<i class="fa-solid fa-circle-check"></i> Refresh your live app preview. You should see navigation links in the left sidebar. Click "Settings" → it goes to the Devise edit page. Click your username in the sidebar → see "Go to profile" and "Sign out" options. Click "Sign out" and verify it works!
 
 (Don't worry that "Feed" and "Profile" error when clicked. We haven't built those controller actions yet. We'll get there.)
 </div>
@@ -922,7 +922,7 @@ The `data-bs-toggle="modal"` and `data-bs-target="#new_photo"` attributes tell B
 
 <div class="alert alert-success">
 
-**CHECK**: Click "Add photo" in the sidebar → a modal pops up with the photo form. Upload a photo with a caption → it's created! The modal closes and you're redirected to the photo's show page.
+<i class="fa-solid fa-circle-check"></i> Click "Add photo" in the sidebar → a modal pops up with the photo form. Upload a photo with a caption → it's created! The modal closes and you're redirected to the photo's show page.
 </div>
 
 ## Right sidebar
@@ -998,7 +998,7 @@ with:
 
 <div class="alert alert-success">
 
-**CHECK**: On a wide screen, you should see the search bar in the right sidebar. You should also see a circular floating button in the bottom-right corner of the screen. Reduce your screen width and watch them disappear.
+<i class="fa-solid fa-circle-check"></i> On a wide screen, you should see the search bar in the right sidebar. You should also see a circular floating button in the bottom-right corner of the screen. Reduce your screen width and watch them disappear.
 </div>
 
 Now would be a good time for a commit:
@@ -1117,7 +1117,7 @@ Notice how we use Bootstrap's [responsive display utilities](https://getbootstra
 
 <div class="alert alert-success">
 
-**CHECK**: Narrow your browser window. You should see a top navbar with "Photogram (Industrial)" and the bottom nav bar with Feed, Discover, Profile, and Settings icons. Widen the browser → the sidebars reappear and the mobile nav hides.
+<i class="fa-solid fa-circle-check"></i> Narrow your browser window. You should see a top navbar with "Photogram (Industrial)" and the bottom nav bar with Feed, Discover, Profile, and Settings icons. Widen the browser → the sidebars reappear and the mobile nav hides.
 </div>
 
 Now would be a good time for a commit:
@@ -1318,7 +1318,7 @@ Create `app/views/users/index.html.erb`:
 
 <div class="alert alert-success">
 
-**CHECK**: Click every link in the sidebar: Feed, Discover, Profile, and Settings should all load! Click your username → "Go to profile" → the profile page loads with the username. Visit `/alice/followers` and `/alice/follows` in your browser bar. The entire app is navigable!
+<i class="fa-solid fa-circle-check"></i> Click every link in the sidebar: Feed, Discover, Profile, and Settings should all load! Click your username → "Go to profile" → the profile page loads with the username. Visit `/alice/followers` and `/alice/follows` in your browser bar. The entire app is navigable!
 </div>
 
 Make a commit when you see everything is working:
