@@ -802,6 +802,18 @@ git commit -m "Updated photo form and customized scaffold controllers"
 git push
 ```
 
+## Where we are
+
+We're about halfway through this lesson. So far, we've:
+
+- Added routes for the likes list, the feed, discover, and pending pages, and moved the vanity `:username` routes to the end of the file.
+- Required sign-in on every page with `authenticate_user!`.
+- Connected our stylesheet and icons, and added flash messages.
+- Cut the photo form down to an image and a caption.
+- Changed the four scaffold controllers to set the owner, author, fan, or sender from `current_user`, set a follow request's status ourselves, and send people back to the page they came from.
+
+The rest of the lesson builds the layout around every page: a three-column grid, the left sidebar, the new photo modal, the right sidebar with search, and the phone navigation bars. Then we'll create the `UsersController` and a stub template for each of its pages.
+
 ## Three-column grid structure
 
 Open [the target](https://pg-industrial.matchthetarget.com) and observe: navigation on the left, content in the center, search on the right. Let's build that layout with a grid.
