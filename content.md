@@ -513,7 +513,7 @@ Try creating a photo from `/photos/new`. Upload an image and add a caption.
 
 You should get hit with an "Owner must exist" validation error! (Good thing we did all of that backend work in the earlier lessons to keep out bad data.)
 
-<!-- [screenshot] S1: /photos/new after submitting an image and caption, showing the red "Owner must exist" alert above the form -->
+![The new photo form after submitting, with a red "Owner must exist" alert above the image and caption fields](/assets/owner-must-exist.png)
 
 The owner isn't set automatically because the scaffold expects an `owner_id` from the form, which we just removed. Let's fix all four scaffold controllers to assign `current_user` and redirect sensibly.
 
@@ -1101,7 +1101,7 @@ with:
 <i class="fa-solid fa-circle-check"></i> On a wide screen, you should see the search bar in the right sidebar. You should also see a circular floating button in the bottom-right corner of the screen. Click it → the photo modal opens. Reduce your screen width and watch them disappear.
 </div>
 
-<!-- [screenshot] S2: the app at 1440 pixels wide, signed in as alice, showing the left sidebar, the search bar in the right sidebar, and the floating button in the bottom-right corner -->
+![The feed page on a wide screen, signed in as Alice: navigation in the left sidebar, the search bar at the top right, and a round floating button in the bottom-right corner](/assets/layout-wide.png)
 
 Now would be a good time for a commit:
 
@@ -1211,7 +1211,7 @@ Both phone bars have `md:hidden`, and both sidebars have `hidden md:block`. They
 <i class="fa-solid fa-circle-check"></i> Narrow your browser window. You should see a top navbar with "Photogram (Industrial)" and the bottom navbar with Feed, Discover, Profile, and Settings icons. Widen the browser → the sidebars reappear and the phone navigation hides.
 </div>
 
-<!-- [screenshot] S3: side by side, the same page at 1440 pixels wide (sidebars) and at 390 pixels wide (top navbar and bottom navigation) -->
+![The feed page side by side: on a wide screen with both sidebars, and on a phone-sized screen with the top navbar and the bottom navigation icons](/assets/layout-wide-and-narrow.png)
 
 Now would be a good time for a commit:
 
