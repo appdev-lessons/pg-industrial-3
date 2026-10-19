@@ -90,7 +90,7 @@ Rails.application.routes.draw do
   get "pending" => "users#pending", as: :pending
 end
 ```
-{: filename="config/routes.rb" }
+{: filename="config/routes.rb" copyable }
 
 Besides the new routes, there's some re-ordering, which is mostly cosmetic (e.g. the `resources` are now in alphabetical order: comments, follow requests, likes, photos).
 
@@ -129,7 +129,7 @@ Rails.application.routes.draw do
   get ":username/follows" => "users#follows", as: :follows
 end
 ```
-{: filename="config/routes.rb" }
+{: filename="config/routes.rb" copyable }
 
 <div class="alert alert-success">
 
@@ -1301,18 +1301,18 @@ Update the `feed` action (replacing our earlier stub) and add `show` and `discov
   end
 
   def feed
-    @photos = current_user.feed
+    @photos = current_user.feed.latest
   end
 
   def discover
-    @photos = current_user.discover
+    @photos = current_user.discover.latest
   end
 
   # ...
 ```
 {: filename="app/controllers/users_controller.rb" }
 
-These actions use the `has_many :through` associations we built in the previous lesson. `current_user.feed` returns all photos posted by people the current user follows, and `current_user.discover` returns all photos liked by people they follow. The `/feed` and `/discover` URLs have no username in them, so these actions use `current_user` rather than `@user`. The model does the work of finding the photos; the controller just passes them to the view.
+These actions use the `has_many :through` associations we built in the previous lesson. `current_user.feed` returns all photos posted by people the current user follows, and `current_user.discover` returns all photos liked by people they follow. The `/feed` and `/discover` URLs have no username in them, so these actions use `current_user` rather than `@user`. `latest` is the scope we added to the Photo model in Part 1, so the newest photos come first. The model does the work of finding and ordering the photos; the controller just passes them to the view.
 
 ### Follows, Followers, and Pending
 
