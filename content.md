@@ -239,7 +239,7 @@ That last command publishes the branch to GitHub. From now on, you can push with
 
 ### Open and submit your pull request
 
-Now that you've pushed your branch to GitHub, it's time to open a **pull request** (PR). A pull request lets us review your code and leave line-by-line feedback.
+Now that you've pushed your branch to GitHub, it's time to open a **pull request** (PR). A pull request lets us review your code and leave line-by-line feedback. ([Step 3 of The Pull Request Workflow](/lessons/936-pull-request-workflow#step-3-open-a-pull-request) has the general steps.)
 
 <div class="alert alert-primary">
 
@@ -264,7 +264,7 @@ github.com/[YOUR_GITHUB_USERNAME]/pg-industrial/pull/X
 It should _not_ contain `appdev-projects` in the URL. If it does, you submitted a PR to _our_ repo instead of to _your own fork_.
 
 <aside>
-You don't need to merge your branches now, but when you're ready: [see the notes in our Git CLI lesson](/lessons/196-git-cli#merging-branches).
+You don't need to merge your branches now, but when you're ready: [see Step 6 of The Pull Request Workflow](/lessons/936-pull-request-workflow#step-6-squash-and-merge-to-main).
 </aside>
 
 Any additional commits you push to this branch will automatically show up on the pull request. As you work through the rest of this lesson, you can periodically check the PR diff on GitHub in the "Files changed" tab to get a comprehensive overview of everything that has changed so far.
