@@ -461,7 +461,7 @@ git push
 
 ## Updating the photo form partial
 
-Visit `/photos/new` in your live app preview. The scaffold form has fields for Owner, Pinned, Comments count, and Likes count, none of which a user should need to fill in! Let's clean it up to just an image upload and a caption.
+Visit `/photos/new` in your live app preview. The scaffold form has fields for Owner, Comments count, and Likes count, none of which a user should need to fill in! Let's clean it up to just an image upload and a caption.
 
 Open `app/views/photos/_form.html.erb` and replace its entire contents with:
 
@@ -498,7 +498,7 @@ Let's walk through it:
 - `form_with(model: photo)` uses the `photo` local variable, which means the form works for both new and existing photos. Rails automatically determines the correct URL and HTTP method.
 - Each validation error is displayed as a red `alert`.
 - `form.file_field :image` is an actual image upload field, in place of the scaffold's text field. The `accept: "image/*"` tells the browser to only show image files in the file picker dialog. The `photo.persisted? && photo.image.attached?` check means that when editing an existing photo, we show the current image above the file field so the user can see what they're replacing.
-- We removed the owner ID, pinned, comments count, and likes count fields. These are not things a user should fill out when they create a new photo.
+- We removed the owner ID, comments count, and likes count fields. These are not things a user should fill out when they create a new photo.
 
 The labels are `visually-hidden` throughout the form. We use placeholders instead for a cleaner look, but the labels are still present for accessibility (screen readers can read them).
 
@@ -575,16 +575,16 @@ Here's a check on `redirect_back`.
 
 **3. Update `photo_params`:**
 
-```ruby{3:(26-54)}
+```ruby{3:(26-45)}
   # ...
   def photo_params
-    params.expect(photo: [ :image, :caption, :pinned ])
+    params.expect(photo: [ :image, :caption ])
   end
   # ...
 ```
 {: filename="app/controllers/photos_controller.rb" }
 
-We permit `:image`, `:caption`, and `:pinned`. Notice that `:owner_id` is _not_ in this list because we set that in the controller, not from form params. We also dropped `:comments_count` and `:likes_count`, which our counter caches keep up to date.
+We permit `:image` and `:caption`. Notice that `:owner_id` is _not_ in this list because we set that in the controller, not from form params. We also dropped `:comments_count` and `:likes_count`, which our counter caches keep up to date.
 
 <div class="alert alert-success">
 
