@@ -1451,11 +1451,11 @@ The user pages show stub content for now. We'll replace those stubs with real vi
 require "rails_helper"
 
 RSpec.describe Comment, type: :model do
-  describe "has a belongs_to association defined called 'author' with Class name 'User'", points: 1 do
+  describe "has a belongs_to association defined called 'author' with Class name 'User'", points: 1, hint: h("belongs_to_association pg_associations_lesson") do
     it { should belong_to(:author).class_name("User") }
   end
 
-  describe "has a belongs_to association defined called 'photo'", points: 1 do
+  describe "has a belongs_to association defined called 'photo'", points: 1, hint: h("pg_associations_lesson") do
     it { should belong_to(:photo) }
   end
 end
@@ -1463,11 +1463,11 @@ end
 require "rails_helper"
 
 RSpec.describe FollowRequest, type: :model do
-  describe "has a belongs_to association defined called 'sender' with Class name 'User'", points: 1 do
+  describe "has a belongs_to association defined called 'sender' with Class name 'User'", points: 1, hint: h("belongs_to_association pg_associations_lesson") do
     it { should belong_to(:sender).class_name("User") }
   end
 
-  describe "has a belongs_to association defined called 'recipient' with Class name 'User'", points: 1 do
+  describe "has a belongs_to association defined called 'recipient' with Class name 'User'", points: 1, hint: h("belongs_to_association pg_associations_lesson") do
     it { should belong_to(:recipient).class_name("User") }
   end
 end
@@ -1475,13 +1475,13 @@ end
 require "rails_helper"
 
 RSpec.describe Like, type: :model do
-  describe "has a belongs_to association defined called 'fan' with Class name 'User'", points: 1 do
+  describe "has a belongs_to association defined called 'fan' with Class name 'User'", points: 1, hint: h("belongs_to_association pg_associations_lesson") do
     it { should belong_to(:fan).class_name("User") }
   end
 end
 
 RSpec.describe Like, type: :model do
-  describe "has a belongs_to association defined called 'photo'", points: 1 do
+  describe "has a belongs_to association defined called 'photo'", points: 1, hint: h("pg_associations_lesson") do
     it { should belong_to(:photo) }
   end
 end
@@ -1489,19 +1489,19 @@ end
 require "rails_helper"
 
 RSpec.describe Photo, type: :model do
-  describe "has a belongs_to association defined called 'owner' with Class name 'User'", points: 1 do
+  describe "has a belongs_to association defined called 'owner' with Class name 'User'", points: 1, hint: h("belongs_to_association pg_associations_lesson") do
     it { should belong_to(:owner).class_name("User") }
   end
 
-  describe "has a has_many association defined called 'comments'", points: 1 do
+  describe "has a has_many association defined called 'comments'", points: 1, hint: h("pg_associations_lesson") do
     it { should have_many(:comments) }
   end
 
-  describe "has a has_many association defined called 'likes'", points: 1 do
+  describe "has a has_many association defined called 'likes'", points: 1, hint: h("pg_associations_lesson") do
     it { should have_many(:likes) }
   end
 
-  describe "has a has_many (many-to_many) association defined called 'fans' through 'likes'", points: 1 do
+  describe "has a has_many (many-to_many) association defined called 'fans' through 'likes'", points: 1, hint: h("has_many_through pg_associations_lesson") do
     it { should have_many(:fans).through(:likes) }
   end
 end
@@ -1510,51 +1510,51 @@ require "rails_helper"
 
 
 RSpec.describe User, type: :model do
-  describe "has a has_many association defined called 'comments' with Class name 'Comment' and foreign key 'author_id'", points: 1 do
+  describe "has a has_many association defined called 'comments' with Class name 'Comment' and foreign key 'author_id'", points: 1, hint: h("has_many_association pg_associations_lesson") do
     it { should have_many(:comments).class_name("Comment").with_foreign_key("author_id") }
   end
 
-  describe "has a has_many association defined called 'own_photos' with Class name 'Photo' and foreign key 'owner_id'", points: 1 do
+  describe "has a has_many association defined called 'own_photos' with Class name 'Photo' and foreign key 'owner_id'", points: 1, hint: h("has_many_association pg_associations_lesson") do
     it { should have_many(:own_photos).class_name("Photo").with_foreign_key("owner_id") }
   end
 
-  describe "has a has_many association defined called 'likes' with Class name 'Like' and foreign key 'fan_id'", points: 1 do
+  describe "has a has_many association defined called 'likes' with Class name 'Like' and foreign key 'fan_id'", points: 1, hint: h("has_many_association pg_associations_lesson") do
     it { should have_many(:likes).class_name("Like").with_foreign_key("fan_id") }
   end
 
-  describe "has a has_many (many-to_many) association defined called 'liked_photos' through 'likes' and source 'photo'", points: 1 do
+  describe "has a has_many (many-to_many) association defined called 'liked_photos' through 'likes' and source 'photo'", points: 1, hint: h("has_many_through pg_associations_lesson") do
     it { should have_many(:liked_photos).through(:likes).source(:photo) }
   end
 
-  describe "has a has_many association defined called 'sent_follow_requests' with Class name 'FollowRequest' and foreign key 'sender_id'", points: 1 do
+  describe "has a has_many association defined called 'sent_follow_requests' with Class name 'FollowRequest' and foreign key 'sender_id'", points: 1, hint: h("has_many_association pg_associations_lesson") do
     it { should have_many(:sent_follow_requests).class_name("FollowRequest").with_foreign_key("sender_id") }
   end
 
-  describe "has a has_many association defined called 'received_follow_requests' with Class name 'FollowRequest' and foreign key 'recipient_id'", points: 1 do
+  describe "has a has_many association defined called 'received_follow_requests' with Class name 'FollowRequest' and foreign key 'recipient_id'", points: 1, hint: h("has_many_association pg_associations_lesson") do
     it { should have_many(:received_follow_requests).class_name("FollowRequest").with_foreign_key("recipient_id") }
   end
 
-  describe "has a has_many association defined called 'accepted_sent_follow_requests' with scope where 'status' is \"accepted\"", points: 1 do
+  describe "has a has_many association defined called 'accepted_sent_follow_requests' with scope where 'status' is \"accepted\"", points: 1, hint: h("scoped_has_many has_many_association pg_associations_lesson") do
     it { should have_many(:accepted_sent_follow_requests).class_name("FollowRequest").with_foreign_key("sender_id").conditions(status: "accepted") }
   end
 
-  describe "has a has_many association defined called 'accepted_received_follow_requests' with scope where 'status' is \"accepted\"", points: 1 do
+  describe "has a has_many association defined called 'accepted_received_follow_requests' with scope where 'status' is \"accepted\"", points: 1, hint: h("scoped_has_many has_many_association pg_associations_lesson") do
     it { should have_many(:accepted_received_follow_requests).class_name("FollowRequest").with_foreign_key("recipient_id").conditions(status: "accepted") }
   end
 
-  describe "has a has_many (many-to_many) association defined called 'followers' through 'accepted_received_follow_requests' and source 'sender'", points: 1 do
+  describe "has a has_many (many-to_many) association defined called 'followers' through 'accepted_received_follow_requests' and source 'sender'", points: 1, hint: h("has_many_through pg_associations_lesson") do
     it { should have_many(:followers).through(:accepted_received_follow_requests).source(:sender) }
   end
 
-  describe "has a has_many (many-to_many) association defined called 'leaders' through 'accepted_sent_follow_requests' and source 'recipient'", points: 1 do
+  describe "has a has_many (many-to_many) association defined called 'leaders' through 'accepted_sent_follow_requests' and source 'recipient'", points: 1, hint: h("has_many_through pg_associations_lesson") do
     it { should have_many(:leaders).through(:accepted_sent_follow_requests).source(:recipient) }
   end
 
-  describe "has a has_many (many-to_many) association defined called 'feed' through 'leaders' and source 'own_photos'", points: 1 do
+  describe "has a has_many (many-to_many) association defined called 'feed' through 'leaders' and source 'own_photos'", points: 1, hint: h("has_many_through pg_associations_lesson") do
     it { should have_many(:feed).through(:leaders).source(:own_photos) }
   end
 
-  describe "has a has_many (many-to_many) association defined called 'discover' through 'leaders' and source 'liked_photos'", points: 1 do
+  describe "has a has_many (many-to_many) association defined called 'discover' through 'leaders' and source 'liked_photos'", points: 1, hint: h("has_many_through pg_associations_lesson") do
     it { should have_many(:discover).through(:leaders).source(:liked_photos) }
   end
 end
@@ -1562,19 +1562,19 @@ end
 require "rails_helper"
 
 describe "User authentication" do
-  it "displays a banner to sign in when trying to visit the homepage", points: 1 do
+  it "displays a banner to sign in when trying to visit the homepage", points: 1, hint: h("require_sign_in flash_messages") do
     visit "/"
 
     expect(page).to have_content("You need to sign in or sign up before continuing")
   end
 
-  it "sends the user to the sign in page when trying to visit the homepage", points: 1 do
+  it "sends the user to the sign in page when trying to visit the homepage", points: 1, hint: h("require_sign_in") do
     visit "/"
 
     expect(page).to have_current_path("/users/sign_in")
   end
 
-  it "allows new user sign ups", points: 1 do
+  it "allows new user sign ups", points: 1, hint: h("pg_devise_views permit_username flash_messages") do
     visit "/users/sign_up"
 
     fill_in "Email", with: "alice@example.com"
@@ -1586,7 +1586,7 @@ describe "User authentication" do
     expect(page).to have_content("Welcome! You have signed up successfully")
   end
 
-  it "allows an existing user to sign in", points: 1 do
+  it "allows an existing user to sign in", points: 1, hint: h("pg_devise_views flash_messages") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
 
     visit "/users/sign_in"
@@ -1598,7 +1598,7 @@ describe "User authentication" do
     expect(page).to have_content("Signed in successfully")
   end
 
-  it "allows a user to sign out", points: 1 do
+  it "allows a user to sign out", points: 1, hint: h("pg_sign_out") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
 
     visit "/users/sign_in"
@@ -1617,7 +1617,7 @@ end
 require "rails_helper"
 
 describe "/" do
-  it "can be visited", points: 1 do
+  it "can be visited", points: 1, hint: h("pg_devise_views read_error_page") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1626,7 +1626,7 @@ describe "/" do
     expect(page.status_code).to be(200)
   end
 
-  it "has a navbar", points: 1 do
+  it "has a navbar", points: 1, hint: h("structure_must_match pg_shared_partials") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1635,7 +1635,7 @@ describe "/" do
     expect(page).to have_tag("nav", with: { class: "navbar" })
   end
 
-  it "has a Settings link for the signed in user", points: 1 do
+  it "has a Settings link for the signed in user", points: 1, hint: h("pg_shared_partials copy_must_match") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1644,7 +1644,7 @@ describe "/" do
     expect(page).to have_link("Settings", href: "/users/edit")
   end
 
-  it "does not have a sign in link if the user is already signed in", points: 1 do
+  it "does not have a sign in link if the user is already signed in", points: 1, hint: h("signed_in_or_not pg_shared_partials") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1653,7 +1653,7 @@ describe "/" do
     expect(page).to_not have_link("Sign in", href: "/users/sign_in")
   end
 
-  it "has a link, 'Feed', that navigates to the 'Feed' page", points: 1 do
+  it "has a link, 'Feed', that navigates to the 'Feed' page", points: 1, hint: h("pg_shared_partials") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1664,7 +1664,7 @@ describe "/" do
     expect(page).to have_current_path("/feed")
   end
 
-  it "has a link, 'Discover', that navigates to the 'Discover' page", points: 1 do
+  it "has a link, 'Discover', that navigates to the 'Discover' page", points: 1, hint: h("pg_shared_partials") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1675,7 +1675,7 @@ describe "/" do
     expect(page).to have_current_path("/discover")
   end
 
-  it "has a link, 'Go to profile', that navigates to the profile page", points: 1 do
+  it "has a link, 'Go to profile', that navigates to the profile page", points: 1, hint: h("pg_shared_partials") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1686,7 +1686,7 @@ describe "/" do
     expect(page).to have_current_path("/#{user.username}")
   end
 
-  it "has an 'Add photo' button", points: 1 do
+  it "has an 'Add photo' button", points: 1, hint: h("pg_shared_partials") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1707,7 +1707,7 @@ end
 require "rails_helper"
 
 describe "/discover" do
-  it "can be visited", points: 1 do
+  it "can be visited", points: 1, hint: h("pg_devise_views read_error_page") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1716,7 +1716,7 @@ describe "/discover" do
     expect(page.status_code).to be(200)
   end
 
-  it "shows photos liked by people the current user follows", points: 1 do
+  it "shows photos liked by people the current user follows", points: 1, hint: h("pg_feed_discover pg_photo_card") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1750,7 +1750,7 @@ end
 require "rails_helper"
 
 describe "/feed" do
-  it "can be visited", points: 1 do
+  it "can be visited", points: 1, hint: h("pg_devise_views read_error_page") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1759,7 +1759,7 @@ describe "/feed" do
     expect(page.status_code).to be(200)
   end
 
-  it "shows their leader's photos", points: 1 do
+  it "shows their leader's photos", points: 1, hint: h("pg_feed_discover pg_photo_card") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1773,7 +1773,7 @@ describe "/feed" do
     expect(page).to have_tag("img")
   end
 
-  it "allows them to like their leader's photos", points: 1 do
+  it "allows them to like their leader's photos", points: 1, hint: h("pg_like_button current_user_owner") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1788,7 +1788,7 @@ describe "/feed" do
     expect(page).to have_tag("i", with: { class: [ "fa-solid", "fa-heart" ] })
   end
 
-  it "allows them to un-like their leader's photos", points: 1 do
+  it "allows them to un-like their leader's photos", points: 1, hint: h("counter_cache_option pg_like_button") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1804,7 +1804,7 @@ describe "/feed" do
     expect(page).to have_css("i.fa-regular.fa-heart")
   end
 
-  it "allows the user to add a comment on their leader's photos", points: 1 do
+  it "allows the user to add a comment on their leader's photos", points: 1, hint: h("pg_comment_form current_user_owner") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1820,7 +1820,7 @@ describe "/feed" do
     expect(page).to have_content("New comment")
   end
 
-  it "allows the user to delete their comment", points: 1 do
+  it "allows the user to delete their comment", points: 1, hint: h("pg_comment_partial") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1838,7 +1838,7 @@ describe "/feed" do
     expect(page).not_to have_content("New comment")
   end
 
-  it "allows the user to edit their comment", points: 1 do
+  it "allows the user to edit their comment", points: 1, hint: h("pg_comment_partial") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
@@ -1859,7 +1859,7 @@ describe "/feed" do
     expect(page).to have_content("Edited comment")
   end
 
-  it "shows an alert instead of saving a blank comment", points: 1 do
+  it "shows an alert instead of saving a blank comment", points: 1, hint: h("pg_comment_errors flash_messages") do
     user = User.create(username: "alice", email: "alice@example.com", password: "appdev")
     sign_in(user)
 
