@@ -142,7 +142,7 @@ Here's a check on route order.
 - `products#index`
   - Not quite. Rails stops at the first route that matches, and `:slug` matches `products`.
 - A routing error
-  - Not quite. `:slug` matches any single segment, so the request does find a route.
+  - `:slug` matches any single segment, so the request does find a route.
 - `pages#show`
   - Yes! Rails uses the first matching route, with `"products"` as `params[:slug]`.
 {: .choose_best #route_order title="Route order" points="1" answer="3" }
@@ -188,9 +188,9 @@ Here's a check on nested routes.
 - `/reviews/:book_id`
   - Not quite. The nested resource comes after its parent in the path.
 - `/books/:book_id/reviews`
-  - Yes! The parent's ID sits in the path, and arrives as `params[:book_id]`.
+  - Yes! The parent's ID is part of the path, and Rails sets `params[:book_id]` to it.
 - `/books/reviews/:id`
-  - Not quite. Look for the `:book_id` segment that identifies the parent.
+  - Close! The parent does come first, but its ID is missing. A nested path needs a segment that says which book.
 {: .choose_best #nested_route title="Nested routes" points="1" answer="2" }
 
 ### Users index
@@ -297,11 +297,11 @@ Here's a check on what that line does.
 
 - With `before_action :authenticate_user!` in `ApplicationController`, what happens when a signed-out visitor requests `/photos`?
 - They're redirected to the sign-in page
-  - Yes! The `before_action` runs before the `index` action, and sends them to `/users/sign_in`.
+  - Yes! `authenticate_user!` runs before the `index` action, and Devise redirects them to `/users/sign_in`.
 - The page loads, but without any photos
   - Not quite. The action never runs for a signed-out visitor.
 - They see a 404 page
-  - Not quite. The route exists; Devise redirects instead.
+  - The route exists, so there's no 404. Devise sends a redirect instead.
 {: .choose_best #authenticate_user title="Signed-out visitors" points="1" answer="1" }
 
 ### Stubbing the feed action
@@ -540,7 +540,7 @@ Here's a check on that idea.
 
 - Which line in a `CommentsController#create` action sets the new comment's author safely?
 - `@comment.author_id = params[:author_id]`
-  - Not quite. Anyone can put any ID in a form's params.
+  - Careful: a form can send any value, so a visitor could put someone else's ID in `author_id`.
 - `@comment.author = current_user`
   - Yes! `current_user` comes from the session, not from the form.
 - `@comment.author = User.first`
@@ -566,9 +566,9 @@ Here's a check on `redirect_back`.
 
 - What does `redirect_back fallback_location: root_url` do when the request has no referer?
 - It raises an error
-  - Not quite. That's what the fallback is there to prevent.
+  - Not quite. The `fallback_location` is there for this case, so no error is raised.
 - It reloads the same page
-  - Not quite. Without a referer, Rails doesn't know where "back" is.
+  - Without a referer, Rails can't tell which page the request came from, so there's no "back" to go to.
 - It sends the user to `root_url`
   - Yes! The fallback is used whenever Rails can't tell where the request came from.
 {: .choose_best #redirect_back title="Redirecting back" points="1" answer="3" }
