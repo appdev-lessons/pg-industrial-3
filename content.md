@@ -1345,7 +1345,7 @@ Each action uses an association we defined on the User model. `leaders` gives us
 
 ## Stub view templates
 
-Click "Discover" again. This time, the error page says `ActionController::MissingExactTemplate` and `UsersController#discover is missing a template for request formats: text/html`. The action exists now, but it has no view template to render. Let's create basic stubs so every page loads. We'll build them out with real content in the next lesson.
+Click "Discover" again. This time, the error page says `ActionController::MissingExactTemplate` and `UsersController#discover is missing a template for request formats: text/html`. The action exists now, but it has no view template to render. Let's create basic stubs so every page loads. We'll build them out with real content in Part 4.
 
 Update `app/views/users/feed.html.erb` to replace our earlier stub:
 
@@ -1432,7 +1432,7 @@ git push
 
 You now have a navigable app with working authentication, a responsive three-column layout, phone navigation, a photo upload modal, and controllers that set the current user and send people back to where they were. Every link in the sidebar works, and you can create photos from the modal.
 
-The user pages show stub content for now. We'll replace those stubs with real view templates (photo cards, user profiles, follower lists, and more) in the next lesson.
+The user pages show stub content for now. We'll replace those stubs with real view templates (photo cards, user profiles, follower lists, and more) in Part 4.
 
 <div class="alert alert-success">
 
