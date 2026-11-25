@@ -100,7 +100,7 @@ You should see an error page that says `ActionDispatch::MissingController` and `
 
 Rails checks the routes in `routes.rb` from top to bottom, and uses the first one that matches the request. Our new `get ":username"` route matches _any_ single segment after the `/`, so it matched `/photos`, with `"photos"` as the username, before Rails ever reached `resources :photos`. (We don't have a `UsersController` yet, which is why the error is about a missing controller.)
 
-The fix is to move the three `:username` routes to the very end of the file, after every more specific route:
+To fix that, let's move the three `:username` routes to the very end of the file, after every more specific route:
 
 ```ruby{22-24}
 Rails.application.routes.draw do
@@ -534,7 +534,7 @@ Open `app/controllers/photos_controller.rb`. We need to make a few changes from 
 ```
 {: filename="app/controllers/photos_controller.rb" }
 
-Instead of accepting `owner_id` from the form, we set it from `current_user`. A form can send any value it likes, so we never let it say who is performing an action.
+Instead of accepting `owner_id` from the form, we set it from `current_user`. A form can send any value, so we never rely on it to tell us who is performing an action.
 
 Here's a check on that idea.
 
@@ -621,7 +621,7 @@ Open `app/controllers/comments_controller.rb`. We need to make a few changes fro
 
 Same pattern as photos: we set the author from `current_user` rather than trusting form input.
 
-In the next lesson, the form to add a comment will sit under each photo on the feed and profile pages, so both outcomes send the user back to that page. When the comment saves, they see a notice. When it doesn't (for example, when the body is blank), the scaffold would have shown its own comment form page; instead, we go back too, and show the validation errors as an alert. `full_messages.to_sentence` joins the errors into one sentence, like "Body can't be blank." The tests check that a blank comment ends with that alert rather than an error page.
+In Part 4, the form to add a comment will be under each photo on the feed and profile pages, so both outcomes send the user back to that page. When the comment saves, they see a notice. When it doesn't (for example, when the body is blank), the scaffold would have shown its own comment form page; instead, we go back too, and show the validation errors as an alert. `full_messages.to_sentence` joins the errors into one sentence, like "Body can't be blank." The tests check that a blank comment ends with that alert rather than an error page.
 
 **2. Redirect back after `destroy`:**
 
@@ -790,7 +790,7 @@ Follow, unfollow, accept, and reject all happen from profile pages and the pendi
 ```
 {: filename="app/controllers/follow_requests_controller.rb" }
 
-The sender always comes from `current_user`, so `:sender_id` leaves the list.
+The sender always comes from `current_user`, so we remove `:sender_id` from the list.
 
 ---
 
@@ -1312,7 +1312,7 @@ Update the `feed` action (replacing our earlier stub) and add `show` and `discov
 ```
 {: filename="app/controllers/users_controller.rb" }
 
-These actions use the `has_many :through` associations we built in the previous lesson. `current_user.feed` returns all photos posted by people the current user follows, and `current_user.discover` returns all photos liked by people they follow. The `/feed` and `/discover` URLs have no username in them, so these actions use `current_user` rather than `@user`. `latest` is the scope we added to the Photo model in Part 1, so the newest photos come first. The model does the work of finding and ordering the photos; the controller just passes them to the view.
+These actions use the `has_many :through` associations we built in the previous lesson. `current_user.feed` returns all photos posted by people the current user follows, and `current_user.discover` returns all photos liked by people they follow. The `/feed` and `/discover` URLs have no username in them, so these actions use `current_user` rather than `@user`. `latest` is the scope we added to the Photo model in Part 1, so the newest photos come first. The model does the work of finding and ordering the photos; the controller only passes them to the view.
 
 ### Follows, Followers, and Pending
 
@@ -1436,7 +1436,7 @@ The user pages show stub content for now. We'll replace those stubs with real vi
 
 <div class="alert alert-success">
 
-<i class="fa-solid fa-circle-check"></i> Run `rspec`. You should see `66 examples, 42 failures`. The 22 model tests still pass, and so do two of the sign-in tests: the ones that check that a signed-out visitor is sent to the sign-in page. Most of the other tests sign in by clicking a "Sign in" button, and Devise's sign-in form says "Log in" until we customize it in the next lesson. Run `grade`, so that Grades records the passing tests.
+<i class="fa-solid fa-circle-check"></i> Run `rspec`. You should see `66 examples, 42 failures`. The 22 model tests still pass, and so do two of the sign-in tests: the ones that check that a signed-out visitor is sent to the sign-in page. Most of the other tests sign in by clicking a "Sign in" button, and Devise's sign-in form says "Log in" until we customize it in Part 4. Run `grade`, so that Grades records the passing tests.
 </div>
 
 ---
